@@ -183,3 +183,32 @@ The user asked me to run all phases without stopping, so I chose the label mysel
 - **Backtest headline (2025-26, weekend mornings only):** going every weekend = **43 trips, 17 cloud seas**; going only on GO = **12 trips, 10 cloud seas**; GO or MAYBE = 36 trips, 16 seas; SKIP missed 1 sea. Cloud sea here means the airport-based label, not a summit photo.
 - **Cost:** each TabPFN prediction is billed at a 10,000-credit minimum. Predictions are now cached on disk (`data/interim/pred_cache`), so re-running the report costs nothing.
 - **Live training data:** `make train-table` froze 2013 labelled rows (through 2026-10-08) into `data/model/train_table.parquet` (94 KB, committed). The grader appends each live day.
+
+## 2026-10-10 14:30 — Phase 3: the app, deployed
+
+- **How it was built.** Two parallel agents in their own git worktrees, both working to a written contract (`docs/API.md`):
+  - The **frontend** agent built the React + Vite PWA: 56 KB gzipped main bundle, 24 tests, and checks in headless Chromium at 320 px.
+  - The **API** agent built FastAPI, the Postgres layer, the photo pipeline and the share cards: 54 tests against real Postgres.
+  - I wrote the ML side: Gemma writer and rater, sunrise and leave-by plan, nightly and grader jobs.
+  - Each agent's report listed contract ambiguities. Two real bugs came out of the integration review:
+    1. The How page said "going only on GO" but showed GO-or-MAYBE numbers.
+    2. It called 43 weekend *mornings* "43 weekends".
+- **Gemma writer guardrail, in practice:**
+  - First live-like test: for a SKIP at 8%, Gemma wrote "GO, 0%" three times. The guardrail rejected all three and the template went out.
+  - That exposed a guardrail bug: `json.dumps` escaped "°C" as `°`, which made "0" and "00" count as allowed numbers. Fixed and tested.
+  - With a stricter prompt every draft passed, but one said "leave Electronics City by 03:40 from the parking area" (it had picked up "parking" from the carry list). Numerically valid, semantically wrong: a number guardrail can't catch that. The prompt now fixes a four-sentence order. Latest output: "SKIP: 8% chance of a cloud sea at Nandi Hills on Sun 11 Oct. Sunrise is at 06:07. Leave Electronics City by 03:40. Carry a warm layer, water, and a torch for the walk."
+- **Leave-by:**
+  - Drive times are OSRM free-flow on OpenStreetMap: Electronics City 79 km / 94 min, plus 8 more areas. The E-City time still needs a real-world check.
+  - Each time adds a 20 min buffer and aims to arrive 30 min before sunrise.
+  - The gate time shows as "not yet verified".
+- **Sunrise:** astral with the observer 560 m above the plains gives Sun 11 Oct sunrise 06:07, first light 05:44.
+- **Render:**
+  - All services in Singapore, created through the API by `scripts/render_deploy.py`, which mirrors `render.yaml` (a Blueprint instance can't be created through the API).
+  - `render.yaml` validates against Render's published JSON schema. That check caught `generation: off` being parsed as the boolean `false`.
+  - Services created through the API rebuild on every push, so each now has a build filter (Gemma only on `infra/gemma/**`).
+  - Live: web https://cloudsea-web.onrender.com, API https://cloudsea-api.onrender.com, private `cloudsea-gemma` (2c-8g, 10 GB disk), `cloudsea-nightly` (15:00 UTC = 20:30 IST), `cloudsea-grader` (02:45 UTC = 08:15 IST), `cloudsea-db` (Postgres 17, 0.1c-256mb).
+  - About $152/month at these plans.
+- **Render benchmark wrinkles:**
+  - A plan change is applied in place without a new deploy, so the benchmark waited for a deploy that never came. Fixed by not waiting on deploys after a resize.
+  - Wikimedia returned 403 to Render's IPs until the User-Agent carried a contact URL.
+  - Final numbers, Gemma 4 E2B on CPU: 2c-8g 6.1 tok/s, a call in 11.8 s, a photo in 29.8 s; 4c-8g 6.4 tok/s for $40/month more.
