@@ -115,3 +115,36 @@ What we checked against current docs, and what changed in the plan because of it
     - Thinking mode did worse (3/11) and was 5× slower (~20 s per photo).
   - Confidence stays at 0.95 regardless, so it is not used.
   - Uploaders confirm or correct the label with one tap, and only confirmed labels count for grading.
+
+## 2026-10-10 13:22 — Phase 0: can we get the forecast that exists at 8:30 PM?
+
+- Open-Meteo Single Runs API, `ecmwf_ifs`, at the plains point (13.25 N, 77.68 E):
+  - At 07:51 UTC today the **00 UTC run was available and the 06 UTC run was not**. Still to check: whether the 06 UTC run is out by 15:00 UTC (8:30 PM IST). If not, the nightly job uses the 00 UTC run.
+  - Single runs return low cloud, visibility, boundary-layer height, dew point, temperature and wind, but **not** 850 hPa humidity.
+- **A real example of why grading matters (10 Oct, this morning):**
+  - Yesterday's 06 UTC ECMWF run forecast 06:30 IST at the plains point as **100% low cloud, visibility 220 m** (fog).
+  - The airport reported **4000 m in mist (BR), FEW at 1000 ft, SCT at 1200 ft, 20/19 °C, wind 3 kt** from 05:30 to 08:00 IST.
+  - Raw model fog was an overcall at the airport. The scattered layer sat below summit height (the summit is ~1850 ft above the airport), so Nandi may have had a partial sea. Nobody we know of reported from the top.
+- Today's 00 UTC run forecasts 0% low cloud and 17.8 km visibility for Sun 11 Oct at 06:30 IST, so the first live morning is likely to be a SKIP.
+
+## 2026-10-10 13:58 — Phase 1: the label
+
+The user asked me to run all phases without stopping, so I chose the label myself. The reasoning is here and in `docs/phase1/label_report.md`; changing it is one line (`LABEL` in `cloudsea/label.py`).
+
+- New data:
+  - Summit-column fields at 06:30 IST from Open-Meteo's Historical Forecast API, 2021-03-23 to 2026-10-09: 48,648 hours, no gaps. 850 hPa humidity is used only for labels, never as a forecast feature.
+  - One archived 00 UTC ECMWF IFS run per day since 2024-03-14, for Phase 2 features.
+- Three definitions (`cloudsea/label.py`):
+  - **A:** a low layer at the airport in ≥2 dawn reports, no rain.
+  - **B:** A, plus 850 hPa humidity < 90%.
+  - **C:** strict; fog or visibility < 1000 m in ≥2 reports, no deck at summit height, and 850 hPa humidity < 85%.
+- **Chosen: B.** Base rates 2021–2026: Oct 22%, Nov 41%, Dec 53%, Jan 57%, Feb 21%.
+  - A fires on 23% of July dawns, which is monsoon stratus with the summit inside it; B cuts that to 7%.
+  - C keeps too few positives for a model to learn from.
+- **Photo check (new, not in the original plan).**
+  - Wikimedia Commons has 94 Nandi Hills photos whose EXIF capture time is 05:00–08:59 (2011+). I labelled 31 mornings by eye where the view below is visible (`docs/phase1/photo_reference_labels.csv`); 29 have enough airport reports to judge.
+  - The airport rule said "sea" on 6 mornings and **5 were cloud seas**. It found **5 of 9** photographed cloud seas, and **never fired on the 6 socked-in or 3 partial mornings**.
+  - Misses: two had one low-cloud report (one short of the 2-report rule), one had nothing at the airport (likely valley fog it can't see), and one photo was taken at 08:34.
+  - Small sample, one labeller, camera clocks trusted. A sanity check, not proof.
+- **Bug caught by the example days:** IEM stores visibility in statute miles, so "1500 m" comes back as 1497 m and passed "< 1500 m". Thresholds now have margins (`VIS_LOW_M = 1450`, `VIS_FOG_M = 950`), with a test that runs real reported values through the mile rounding. This lowered base rates by 2–9 points.
+- `make label-report` regenerates everything; `tests/test_label.py` has 11 tests.
