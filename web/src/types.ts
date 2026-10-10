@@ -69,7 +69,7 @@ export interface Backtest {
     weekend_mornings: number; every_weekend_seas: number; go_trips: number; go_seas: number
     go_or_maybe_trips: number; go_or_maybe_seas: number; seas_missed_by_skip: number
   }
-  metrics: Array<{ model: string; brier: number; roc_auc: number; go_precision: number | null }>
+  metrics: Array<{ model: string; brier: number; roc_auc: number; go_precision?: number | null }>
   calibration: Array<{ bin: string; predicted: number; observed: number; n: number }>
 }
 

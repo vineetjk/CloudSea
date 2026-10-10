@@ -113,7 +113,7 @@ def metrics(y: np.ndarray, p: np.ndarray, t_go: float | None = None) -> dict:
     if t_go is not None:
         go = p >= t_go
         m["go_nights"] = int(go.sum())
-        m["go_precision"] = round(float(y[go].mean()), 3) if go.any() else None
+        m["go_precision"] = round(float(y[go].mean()), 4) if go.any() else None
     return m
 
 

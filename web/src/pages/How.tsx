@@ -160,7 +160,7 @@ function BacktestView({ bt }: { bt: Backtest }) {
                 <th scope="row">{m.model}</th>
                 <td>{two(m.brier)}</td>
                 <td>{two(m.roc_auc)}</td>
-                <td>{m.go_precision === null ? '–' : `${Math.round(m.go_precision * 100)}%`}</td>
+                <td>{m.go_precision == null ? "–" : `${Math.round(m.go_precision * 100)}%`}</td>
               </tr>
             ))}
           </tbody>

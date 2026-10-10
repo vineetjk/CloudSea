@@ -15,14 +15,14 @@
         "brier": 0.2153,
         "roc_auc": 0.679,
         "go_nights": 96,
-        "go_precision": 0.604
+        "go_precision": 0.6042
       },
       "test": {
         "n": 151,
         "brier": 0.1771,
         "roc_auc": 0.803,
         "go_nights": 35,
-        "go_precision": 0.686
+        "go_precision": 0.6857
       },
       "calibration": [
         {
@@ -92,7 +92,7 @@
         "brier": 0.147,
         "roc_auc": 0.866,
         "go_nights": 34,
-        "go_precision": 0.765
+        "go_precision": 0.7647
       },
       "calibration": [
         {
@@ -174,7 +174,7 @@
         "brier": 0.2008,
         "roc_auc": 0.724,
         "go_nights": 23,
-        "go_precision": 0.696
+        "go_precision": 0.6957
       },
       "calibration": [
         {
@@ -249,14 +249,14 @@
         "brier": 0.2853,
         "roc_auc": 0.596,
         "go_nights": 31,
-        "go_precision": 0.613
+        "go_precision": 0.6129
       },
       "test": {
         "n": 151,
         "brier": 0.144,
         "roc_auc": 0.869,
         "go_nights": 38,
-        "go_precision": 0.763
+        "go_precision": 0.7632
       },
       "calibration": [
         {

@@ -36,6 +36,9 @@ nightly:  ## Make tonight's call (add ARGS=--dry-run to print instead of saving)
 grade:  ## Grade this morning's dawn (ARGS=--dry-run to print only)
 	$(PY) -m cloudsea.jobs.grader $(ARGS)
 
+screenshots:  ## Screenshots of the live app and share cards -> docs/screenshots (CHROMIUM=path if needed)
+	uv run --with playwright==1.56.0 python scripts/screenshots.py
+
 label-report:  ## Phase 1: label definitions, base rates, examples, photo check -> docs/phase1/label_report.md
 	$(PY) -m cloudsea.analysis.label_report
 
