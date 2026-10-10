@@ -69,7 +69,7 @@ The cron jobs reach Gemma over Render's private network.
 ## Why open matters here
 
 - **The model sits next to the data, with no per-token bill.** The whole stack is about $150 a month on Render, and most of that is the Gemma box. A nightly call takes 12 seconds on 2 CPUs.
-- **When Gemma got something wrong, I could see exactly what it was sent and what it said back.** For a SKIP at 8% it once wrote "GO, 0%" three times in a row. The guardrail threw all three away. Reading the raw exchange is how I found the guardrail's own bug: the degree sign in "17°C" was escaped as `°`, which made "0" an allowed number.
+- **When Gemma got something wrong, I could see exactly what it was sent and what it said back.** For a SKIP at 8% it once wrote "GO, 0%" three times in a row. The guardrail threw all three away. Reading the raw exchange is how I found the guardrail's own bug: the degree sign in "17°C" was escaped as `\u00b0`, which made "0" an allowed number.
 - **One small open model covers text, tool calls, vision and two Indian languages**, so one private service is enough.
 - **Photos stay on my server.** They're private by default, and all EXIF, including GPS, is stripped before storage. No photo goes to a third-party model.
 
@@ -148,7 +148,7 @@ Doubling the cores bought 5%, so the cheaper box is the right one.
 - 71 Python tests (label, leakage, guardrail, translation, EXIF stripping, API) and 24 frontend tests.
 - [BUILD_LOG.md](https://github.com/vineetjk/CloudSea/blob/main/BUILD_LOG.md) has every decision, dead end and number with a timestamp.
 
-[PLACEHOLDER: agent session embed, e.g. {% agent_session <id> %}, and/or the Entire checkpoint link]
+[PLACEHOLDER: agent session embed (DevRelay agent_session tag) and/or the Entire checkpoint link]
 
 ## What's next
 
