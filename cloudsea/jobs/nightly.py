@@ -94,9 +94,13 @@ def main() -> None:
     if args.dry_run:
         return
     from cloudsea import db
+    from cloudsea.jobs.grader import apply_photo_labels
     with db.connect() as conn:
         db.init_schema(conn)
         db.upsert_call(conn, call)
+        # This morning's photos are in by now; let them correct the training rows for the next run.
+        for note in apply_photo_labels(conn, [day - timedelta(days=i) for i in range(3)]):
+            print(note)
         conn.commit()
     print(f"saved call for {call['date']}")
 

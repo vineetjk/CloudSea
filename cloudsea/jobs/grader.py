@@ -19,6 +19,37 @@ from cloudsea import label, live, metar
 from cloudsea.config import IST
 
 
+# Photos from the summit beat the airport proxy once at least two people agree on a clear answer.
+# "partial" is left to the airport label: it is neither a clean yes nor a clean no.
+PHOTO_Y = {"cloud_sea": 1.0, "clear_no_sea": 0.0, "socked_in": 0.0}
+MIN_PHOTO_VOTERS = 2
+
+
+def training_label(airport_y: float | None, photos: dict) -> tuple[float | None, str]:
+    voters = sum(photos.get("counts", {}).values())
+    majority = photos.get("majority")
+    if voters >= MIN_PHOTO_VOTERS and majority in PHOTO_Y:
+        return PHOTO_Y[majority], "photos"
+    return airport_y, "airport"
+
+
+def apply_photo_labels(conn, dawn_days: list[date]) -> list[str]:
+    """Re-label recent training rows from confirmed summit photos (photos keep arriving after 08:15)."""
+    from cloudsea import db
+    changed = []
+    rows = {r["date"]: r for r in db.train_rows(conn)}
+    for dawn_day in dawn_days:
+        call_day = dawn_day - timedelta(days=1)
+        row = rows.get(call_day)
+        if row is None:
+            continue
+        y, source = training_label(row["y"], db.photo_summary(conn, dawn_day))
+        if source == "photos" and y != row["y"]:
+            db.upsert_train_row(conn, call_day, row["features"], y)
+            changed.append(f"{dawn_day}: y {row['y']} -> {y} from photos")
+    return changed
+
+
 def grade(day: date) -> dict:
     reports = live.recent_reports(days=2)
     dawn = metar.dawn_summary(reports)
@@ -60,6 +91,8 @@ def main() -> None:
         if call is not None:
             feats = {k: v for k, v in call["features"].items() if not k.startswith("_")}
             db.upsert_train_row(conn, day - timedelta(days=1), feats, result.get("y"))
+        for note in apply_photo_labels(conn, [day - timedelta(days=i) for i in range(3)]):
+            print(note)
         conn.commit()
     print(f"graded {day}: {result['airport_outcome']} (call: {call['verdict'] if call else 'none'})")
 
