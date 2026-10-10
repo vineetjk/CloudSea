@@ -1,0 +1,17 @@
+{
+  "_note": "Reference labels assigned by eye by the build agent for benchmarking Gemma's photo rater. Not ground truth. 'uncertain' photos are rated but excluded from agreement scoring.",
+  "a-hill-from-over-the-clouds-nandi-hills.jpg": "partial",
+  "above-the-clouds-at-nandi-hills.jpg": "cloud_sea",
+  "early-sunrise-above-clouds-nandi-hills-bangalore.jpg": "cloud_sea",
+  "fog-on-nandi-hills.jpg": "socked_in",
+  "hill-above-the-clouds-at-nandi-hills.jpg": "uncertain",
+  "nandi-betta-hills.jpg": "socked_in",
+  "nandi-hills-bangalore-2017.jpg": "clear_no_sea",
+  "nandi-hills-foggy-view.jpg": "socked_in",
+  "nandi-hills-j-bangalore.jpg": "socked_in",
+  "nandi-hills-sunrise.jpg": "uncertain",
+  "sky-view-from-top-of-nandi-hills.jpg": "clear_no_sea",
+  "sun-rising-over-a-blanket-of-clouds-nandi-hills-karnataka.jpg": "cloud_sea",
+  "sunrise-at-nandi-hills.jpg": "clear_no_sea",
+  "sunrise-nandi-hils-4317595471.jpg": "uncertain"
+}

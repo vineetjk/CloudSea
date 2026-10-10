@@ -1,0 +1,393 @@
+{
+  "label": "mac-m2-8gb",
+  "model": "gemma4:e2b-it-q4_K_M",
+  "ollama_version": "0.35.1",
+  "machine": "macOS-15.0.1-arm64-arm-64bit",
+  "memory_before": {
+    "ollama_rss_gb": 0.01,
+    "swap": "total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)"
+  },
+  "text": {
+    "cold": {
+      "load_s": 13.93,
+      "prompt_tokens": 39,
+      "prompt_tok_s": 64.4,
+      "gen_tokens": 144,
+      "gen_tok_s": 28.6,
+      "total_s": 19.83
+    },
+    "warm_gen_tok_s_median": 27.9,
+    "warm_prompt_tok_s_median": 508.2,
+    "runs": [
+      {
+        "load_s": 13.93,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 64.4,
+        "gen_tokens": 144,
+        "gen_tok_s": 28.6,
+        "total_s": 19.83
+      },
+      {
+        "load_s": 0.02,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 128.3,
+        "gen_tokens": 141,
+        "gen_tok_s": 28.7,
+        "total_s": 5.26
+      },
+      {
+        "load_s": 0.03,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 526.4,
+        "gen_tokens": 137,
+        "gen_tok_s": 26.5,
+        "total_s": 5.27
+      },
+      {
+        "load_s": 0.02,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 508.2,
+        "gen_tokens": 138,
+        "gen_tok_s": 27.9,
+        "total_s": 5.06
+      }
+    ]
+  },
+  "loaded_models": [
+    {
+      "name": "gemma4:e2b-it-q4_K_M",
+      "model": "gemma4:e2b-it-q4_K_M",
+      "size": 237670235,
+      "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": [
+          "gemma4"
+        ],
+        "parameter_size": "4.6B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2026-10-10T13:07:02.787168+05:30",
+      "size_vram": 237670235,
+      "context_length": 4096
+    }
+  ],
+  "memory_loaded": {
+    "ollama_rss_gb": 2.53,
+    "swap": "total = 5120.00M  used = 4176.50M  free = 943.50M  (encrypted)"
+  },
+  "tools": {
+    "trials": 5,
+    "fully_ok": 0,
+    "median_seconds": 1.4,
+    "results": [
+      {
+        "seconds": 2.3,
+        "tools_called": [
+          "get_leave_by"
+        ],
+        "all_four_tools": false,
+        "words": 23,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "The forecast for tomorrow is available. The latest safe departure time from Electronics City is 03:34. This is a forecast, not a guarantee."
+      },
+      {
+        "seconds": 1.5,
+        "tools_called": [
+          "get_leave_by"
+        ],
+        "all_four_tools": false,
+        "words": 28,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "The forecast for Nandi Hills tomorrow is a forecast. The latest safe departure time from Electronics City is 03:34. Conditions include a summit temperature, wind, and recent rain."
+      },
+      {
+        "seconds": 1.2,
+        "tools_called": [
+          "get_leave_by"
+        ],
+        "all_four_tools": false,
+        "words": 22,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "The forecast for Nandi Hills tomorrow is a forecast, not a guarantee. The latest safe departure time from Electronics City is 03:34."
+      },
+      {
+        "seconds": 1.4,
+        "tools_called": [
+          "get_leave_by"
+        ],
+        "all_four_tools": false,
+        "words": 23,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "The forecast for tomorrow is available. The latest safe departure time from Electronics City is 03:34. This is a forecast, not a guarantee."
+      },
+      {
+        "seconds": 1.4,
+        "tools_called": [
+          "get_leave_by"
+        ],
+        "all_four_tools": false,
+        "words": 25,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "The forecast for Nandi Hills tomorrow is available. The latest safe departure time from Electronics City is 03:34. This is a forecast, not a guarantee."
+      }
+    ]
+  },
+  "photos": {
+    "photos": 14,
+    "valid_json": 14,
+    "agreement": "3/11",
+    "median_seconds": 3.8,
+    "results": [
+      {
+        "photo": "a-hill-from-over-the-clouds-nandi-hills.jpg",
+        "kb": 150,
+        "seconds": 5.0,
+        "valid_json": true,
+        "reference": "partial",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a view from a hilltop above a thick layer of clouds and fog, with a distant view of the landscape and sea visible beyond the clouds.",
+        "load_s": 0.0,
+        "prompt_tokens": 692,
+        "prompt_tok_s": 204.3,
+        "gen_tokens": 54,
+        "gen_tok_s": 37.7,
+        "total_s": 4.94
+      },
+      {
+        "photo": "above-the-clouds-at-nandi-hills.jpg",
+        "kb": 243,
+        "seconds": 3.5,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.95,
+        "reason": "The image shows a view from a hilltop with a thick layer of fog or clouds filling the landscape below.",
+        "load_s": 0.02,
+        "prompt_tokens": 611,
+        "prompt_tok_s": 253.0,
+        "gen_tokens": 44,
+        "gen_tok_s": 43.6,
+        "total_s": 3.49
+      },
+      {
+        "photo": "early-sunrise-above-clouds-nandi-hills-bangalore.jpg",
+        "kb": 225,
+        "seconds": 3.3,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.98,
+        "reason": "The image clearly shows a vast, continuous layer of clouds filling the landscape below the viewer.",
+        "load_s": 0.01,
+        "prompt_tokens": 611,
+        "prompt_tok_s": 254.4,
+        "gen_tokens": 41,
+        "gen_tok_s": 47.8,
+        "total_s": 3.32
+      },
+      {
+        "photo": "fog-on-nandi-hills.jpg",
+        "kb": 219,
+        "seconds": 4.8,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a landscape heavily obscured by thick fog or low clouds, characteristic of a cloud sea.",
+        "load_s": 0.0,
+        "prompt_tokens": 746,
+        "prompt_tok_s": 210.9,
+        "gen_tokens": 43,
+        "gen_tok_s": 37.3,
+        "total_s": 4.76
+      },
+      {
+        "photo": "hill-above-the-clouds-at-nandi-hills.jpg",
+        "kb": 61,
+        "seconds": 4.3,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "cloud_sea",
+        "agrees": null,
+        "confidence": 0.95,
+        "reason": "The image shows a large layer of fog or low clouds obscuring the view of the landscape below.",
+        "load_s": 0.05,
+        "prompt_tokens": 746,
+        "prompt_tok_s": 239.7,
+        "gen_tokens": 43,
+        "gen_tok_s": 42.4,
+        "total_s": 4.25
+      },
+      {
+        "photo": "nandi-betta-hills.jpg",
+        "kb": 137,
+        "seconds": 3.6,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a dense layer of fog or low clouds obscuring the view below, characteristic of a cloud sea.",
+        "load_s": 0.03,
+        "prompt_tokens": 611,
+        "prompt_tok_s": 257.6,
+        "gen_tokens": 46,
+        "gen_tok_s": 43.9,
+        "total_s": 3.51
+      },
+      {
+        "photo": "nandi-hills-bangalore-2017.jpg",
+        "kb": 246,
+        "seconds": 4.2,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a vast expanse of land and a distant horizon partially obscured by clouds.",
+        "load_s": 0.02,
+        "prompt_tokens": 746,
+        "prompt_tok_s": 239.7,
+        "gen_tokens": 40,
+        "gen_tok_s": 39.0,
+        "total_s": 4.21
+      },
+      {
+        "photo": "nandi-hills-foggy-view.jpg",
+        "kb": 89,
+        "seconds": 2.5,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a dense layer of fog or clouds filling the landscape below the viewer.",
+        "load_s": 0.02,
+        "prompt_tokens": 426,
+        "prompt_tok_s": 302.0,
+        "gen_tokens": 48,
+        "gen_tok_s": 48.0,
+        "total_s": 2.48
+      },
+      {
+        "photo": "nandi-hills-j-bangalore.jpg",
+        "kb": 377,
+        "seconds": 3.4,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a dense layer of fog or low clouds filling the valley below the viewpoint.",
+        "load_s": 0.01,
+        "prompt_tokens": 611,
+        "prompt_tok_s": 258.9,
+        "gen_tokens": 41,
+        "gen_tok_s": 42.5,
+        "total_s": 3.37
+      },
+      {
+        "photo": "nandi-hills-sunrise.jpg",
+        "kb": 59,
+        "seconds": 4.0,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "cloud_sea",
+        "agrees": null,
+        "confidence": 0.95,
+        "reason": "The image shows a view from above a continuous layer of clouds, indicating the viewer is above a cloud sea.",
+        "load_s": 0.0,
+        "prompt_tokens": 692,
+        "prompt_tok_s": 242.7,
+        "gen_tokens": 45,
+        "gen_tok_s": 44.5,
+        "total_s": 3.92
+      },
+      {
+        "photo": "sky-view-from-top-of-nandi-hills.jpg",
+        "kb": 122,
+        "seconds": 4.3,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "partial",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "Some cloud cover is visible, but there is a view of the distant landscape below.",
+        "load_s": 0.02,
+        "prompt_tokens": 746,
+        "prompt_tok_s": 238.8,
+        "gen_tokens": 38,
+        "gen_tok_s": 36.3,
+        "total_s": 4.24
+      },
+      {
+        "photo": "sun-rising-over-a-blanket-of-clouds-nandi-hills-karnataka.jpg",
+        "kb": 147,
+        "seconds": 2.8,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.98,
+        "reason": "The image shows a vast sea of clouds below the viewer, typical of a sunrise view from a hilltop.",
+        "load_s": 0.02,
+        "prompt_tokens": 530,
+        "prompt_tok_s": 271.6,
+        "gen_tokens": 44,
+        "gen_tok_s": 53.4,
+        "total_s": 2.84
+      },
+      {
+        "photo": "sunrise-at-nandi-hills.jpg",
+        "kb": 75,
+        "seconds": 4.2,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "reason": "The image shows a sunrise over a hazy horizon, suggesting a layer of atmospheric haze or low clouds/fog below the viewer.",
+        "load_s": 0.0,
+        "prompt_tokens": 692,
+        "prompt_tok_s": 245.2,
+        "gen_tokens": 48,
+        "gen_tok_s": 37.9,
+        "total_s": 4.15
+      },
+      {
+        "photo": "sunrise-nandi-hils-4317595471.jpg",
+        "kb": 73,
+        "seconds": 3.6,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "cloud_sea",
+        "agrees": null,
+        "confidence": 0.95,
+        "reason": "The image shows a vibrant sunset or sunrise with clouds filling the sky above the horizon.",
+        "load_s": 0.02,
+        "prompt_tokens": 611,
+        "prompt_tok_s": 261.2,
+        "gen_tokens": 40,
+        "gen_tok_s": 35.1,
+        "total_s": 3.55
+      }
+    ]
+  },
+  "memory_after": {
+    "ollama_rss_gb": 2.64,
+    "swap": "total = 5120.00M  used = 4209.62M  free = 910.38M  (encrypted)"
+  }
+}
