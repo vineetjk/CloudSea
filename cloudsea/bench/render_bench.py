@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import sys
 import time
 from datetime import UTC, datetime, timedelta
@@ -141,6 +142,18 @@ def peak_memory_gb(http: httpx.Client, sid: str, since: datetime) -> float | Non
         return None
 
 
+def find_service(http: httpx.Client, owner: str, name: str) -> dict | None:
+    found = http.get("/services", params={"ownerId": owner, "name": name, "limit": 5}).raise_for_status().json()
+    return next((s["service"] for s in found if s["service"]["name"] == name), None)
+
+
+def set_plan(http: httpx.Client, sid: str, plan: str) -> None:
+    previous = latest_deploy(http, sid)["id"]
+    http.patch(f"/services/{sid}", json={"serviceDetails": {"plan": plan}}).raise_for_status()
+    log(f"resized {sid} to {plan}")
+    wait_deploy(http, sid, want_new_after=previous)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--plans", nargs="+", default=["4c-8g", "2c-8g"])
@@ -148,26 +161,40 @@ def main() -> None:
     ap.add_argument("--keep", action="store_true", help="do not delete the services afterwards")
     args = ap.parse_args()
 
+    # Turn SIGTERM into SystemExit so the cleanup in `finally` still runs when the job is stopped.
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(1))
     created: list[str] = []
     with api() as http:
         owner = owner_id(http)
         try:
-            gemma = create_gemma(http, owner, args.plans[0])
-            created.append(gemma["id"])
-            log(f"created private service {gemma['id']} ({args.plans[0]}), slug {gemma['slug']}")
             t_first = datetime.now(UTC)
-            wait_deploy(http, gemma["id"])
-            runner = create_runner(http, owner, f"http://{gemma['slug']}:11434")
-            created.append(runner["id"])
-            log(f"created cron runner {runner['id']}")
-            wait_deploy(http, runner["id"])
+            gemma = find_service(http, owner, GEMMA_NAME)
+            if gemma:
+                log(f"reusing private service {gemma['id']} ({gemma['serviceDetails']['plan']})")
+                created.append(gemma["id"])
+                if gemma["serviceDetails"]["plan"] != args.plans[0]:
+                    set_plan(http, gemma["id"], args.plans[0])
+            else:
+                gemma = create_gemma(http, owner, args.plans[0])
+                created.append(gemma["id"])
+                log(f"created private service {gemma['id']} ({args.plans[0]}), slug {gemma['slug']}")
+                wait_deploy(http, gemma["id"])
+            runner = find_service(http, owner, RUNNER_NAME)
+            if runner:
+                created.append(runner["id"])
+                previous = latest_deploy(http, runner["id"])["id"]
+                http.post(f"/services/{runner['id']}/deploys", json={}).raise_for_status()
+                log(f"reusing cron runner {runner['id']}, redeploying latest commit")
+                wait_deploy(http, runner["id"], want_new_after=previous)
+            else:
+                runner = create_runner(http, owner, f"http://{gemma['slug']}:11434")
+                created.append(runner["id"])
+                log(f"created cron runner {runner['id']}")
+                wait_deploy(http, runner["id"])
 
             for i, plan in enumerate(args.plans):
                 if i > 0:
-                    previous = latest_deploy(http, gemma["id"])["id"]
-                    http.patch(f"/services/{gemma['id']}", json={"serviceDetails": {"plan": plan}}).raise_for_status()
-                    log(f"resized to {plan}")
-                    wait_deploy(http, gemma["id"], want_new_after=previous)
+                    set_plan(http, gemma["id"], plan)
                 since = datetime.now(UTC)
                 result, lines = run_bench(http, owner, runner["id"])
                 result["label"] = f"render-{plan}"

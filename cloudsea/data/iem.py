@@ -21,7 +21,7 @@ from pathlib import Path
 
 URL = "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py"
 FIRST_YEAR = 2008  # IEM's VOBL archive begins 2008-07-21; real sky groups appear from 2011
-USER_AGENT = "CloudSea/0.1 (Nandi Hills cloud-sea forecast; hackathon research)"
+USER_AGENT = "CloudSea/0.1 (https://github.com/vineetjk/CloudSea) python-urllib"
 
 
 def year_url(station: str, network: str, year: int) -> str:

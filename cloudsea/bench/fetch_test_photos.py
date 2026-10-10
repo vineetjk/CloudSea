@@ -14,7 +14,8 @@ from pathlib import Path
 import httpx
 
 API = "https://commons.wikimedia.org/w/api.php"
-UA = "CloudSea/0.1 (Nandi Hills cloud-sea forecast; hackathon research)"
+# Wikimedia rejects (403) clients without contact details, especially from datacenter IPs.
+UA = "CloudSea/0.1 (https://github.com/vineetjk/CloudSea) python-httpx"
 
 TITLES = [
     "File:Above the clouds at Nandi hills.jpg",
