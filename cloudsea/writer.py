@@ -150,3 +150,47 @@ def write_call(facts: Facts) -> dict:
         if not problems:
             return {"text": text, "source": "gemma", "attempts": attempts}
     return {"text": template(facts), "source": "template", "attempts": attempts}
+
+
+# --- Kannada and Hindi ---------------------------------------------------------------------------------
+# Without a glossary, E2B rendered "cloud sea" in Kannada as "cloudy weather" and left English words in;
+# with these terms both read correctly. A translation is published only if it passes check_translation.
+GLOSSARY = {
+    "kn": ("Kannada", "cloud sea = ಮೋಡದ ಸಮುದ್ರ; Nandi Hills = ನಂದಿ ಬೆಟ್ಟ; sunrise = ಸೂರ್ಯೋದಯ; warm layer = ಬೆಚ್ಚಗಿನ ಬಟ್ಟೆ; "
+                      "light jacket = ಹಗುರ ಜಾಕೆಟ್; rain jacket = ಮಳೆ ಜಾಕೆಟ್; torch = ಟಾರ್ಚ್; "
+                      "if you go anyway = ನೀವು ಹೋಗುವುದಾದರೆ"),
+    "hi": ("Hindi", "cloud sea = बादलों का समंदर; sunrise = सूर्योदय; warm layer = गर्म कपड़े; light jacket = हल्की जैकेट; "
+                    "rain jacket = रेनकोट; torch = टॉर्च; if you go anyway = अगर आप फिर भी जाएं"),
+}
+LATIN_WORD = re.compile(r"[A-Za-z]{2,}")
+
+
+def check_translation(text: str, english: str, verdict: str) -> list[str]:
+    problems = []
+    if sorted(NUM_RE.findall(text)) != sorted(NUM_RE.findall(english)):
+        problems.append("numbers differ from the English call")
+    if verdict not in text:
+        problems.append("verdict missing")
+    stray = [w for w in LATIN_WORD.findall(text) if w != verdict]
+    if stray:
+        problems.append(f"untranslated words: {stray}")
+    if len(text) > 4 * len(english):
+        problems.append("too long")
+    return problems
+
+
+def translate(english: str, verdict: str, lang: str) -> str | None:
+    """Gemma's translation of the published call, or None if it doesn't pass the check in two tries."""
+    name, terms = GLOSSARY[lang]
+    prompt = (f"Translate this sunrise forecast into {name}. Use these terms: {terms}. Keep the word {verdict} in English "
+              f"capitals. Keep every number and time exactly as written, in Western digits. Write natural, simple {name} "
+              f"with no other English words. Output only the translation.\n\n{english}")
+    for i in range(2):
+        try:
+            out = gemma.chat([{"role": "user", "content": prompt}], options={"temperature": 0.2 + 0.2 * i})
+        except Exception:  # noqa: BLE001
+            return None
+        text = " ".join(out["message"]["content"].split())
+        if not check_translation(text, english, verdict):
+            return text
+    return None

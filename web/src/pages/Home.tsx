@@ -178,7 +178,11 @@ function CallText({ call }: { call: Call }) {
       <p className="call-text" lang={shown[0]}>
         {shown[2]}
       </p>
-      <p className="caption">Written by Gemma 4 from the forecast.</p>
+      <p className="caption">
+        {shown[0] === 'en'
+          ? 'Written by Gemma 4 from the forecast.'
+          : 'Machine translation by Gemma 4, checked so every number matches the English. It may read awkwardly.'}
+      </p>
     </section>
   )
 }

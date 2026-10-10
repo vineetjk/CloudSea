@@ -65,11 +65,13 @@ def make_call(day: date, train: pd.DataFrame | None = None) -> dict:
         leave_by=home["leave_by"], summit_temp_c=cond["summit_temp_c"], wind_kmh=cond["wind_kmh"],
         rain_chance_pct=cond["rain_chance_pct"], carry=carry)
     written = writer.write_call(facts)
+    text_kn = writer.translate(written["text"], verdict, "kn")
+    text_hi = writer.translate(written["text"], verdict, "hi")
 
     return {
         "date": target, "issued_at": datetime.now(IST), "verdict": verdict, "probability": round(float(p), 4),
         "sunrise": facts.sunrise, "first_light": facts.first_light,
-        "text": written["text"], "text_source": written["source"], "text_kn": None, "text_hi": None,
+        "text": written["text"], "text_source": written["source"], "text_kn": text_kn, "text_hi": text_hi,
         "carry": carry, "conditions": {**cond, "rain_last_24h": rain_24h},
         "leave_by": [{k: r[k] for k in ("area", "label", "drive_minutes", "buffer_minutes", "leave_by")}
                      for r in leave],

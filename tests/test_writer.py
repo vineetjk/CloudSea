@@ -60,3 +60,12 @@ def test_degree_sign_does_not_smuggle_in_zero():
     assert "0" not in facts().allowed_numbers()
     text = "SKIP for Sun 11 Oct: 8% chance, 0 seas expected. Sunrise 06:09. Leave by 03:20."
     assert any("numbers not from tools" in p for p in writer.check(text, facts()))
+
+
+def test_translation_check():
+    en = "SKIP: 8% chance of a cloud sea at Nandi Hills on Sun 11 Oct. Sunrise is at 06:07. Leave Electronics City by 03:40."
+    good = "SKIP: ಅಕ್ಟೋಬರ್ 11 ರಂದು ನಂದಿ ಬೆಟ್ಟದಲ್ಲಿ ಮೋಡದ ಸಮುದ್ರದ 8% ಸಾಧ್ಯತೆ. ಸೂರ್ಯೋದಯ 06:07 ಕ್ಕೆ. 03:40 ಕ್ಕೆ ಹೊರಡಿ."
+    assert writer.check_translation(good, en, "SKIP") == []
+    assert writer.check_translation(good.replace("8%", "18%"), en, "SKIP")
+    assert writer.check_translation(good.replace("ಮೋಡದ", "warm"), en, "SKIP")
+    assert writer.check_translation(good.replace("SKIP", "GO"), en, "SKIP")
