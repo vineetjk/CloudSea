@@ -249,3 +249,14 @@ The user asked me to run all phases without stopping, so I chose the label mysel
   - Three corruption tests cover swapped times, rain chance passed off as cloud-sea chance, and a temperature equal to another number.
   - 6 of 6 real Gemma drafts still pass.
 - **Post:** staged as an unpublished DEV draft (article 4827603), following the challenge template, with images served from GitHub raw URLs. Every live result is a placeholder.
+
+## 2026-10-10 15:30 — Field test without a field: photos people already took
+
+- The user had no one to test it at the summit before the deadline and suggested pulling Nandi photos from Snapchat. I declined. The brief's own rules say no scraping of social media and no invented field results, and strangers' snaps aren't ours to present as testers.
+- Instead: the 30 dated, openly licensed Wikimedia Commons dawn photos from Phase 1 (2012–2020).
+  - The airport-only TabPFN model was trained only on 2021–2025 and given the evening-before features for each morning (`docs/results/photo_mornings_model.csv`).
+  - **ROC-AUC 0.71.** Cloud-sea mornings averaged 25% vs 12–15% for the others.
+  - 1 GO, and it was a cloud sea (6 Jan 2017). No GO on clear or socked-in mornings.
+  - **4 of 10 photographed seas got SKIP**: 6 Mar 2016, 12 Aug 2016, 11 Feb 2017, 27 May 2018. Mostly off-season months, plus one with no airport signal.
+- **Hindcast for this morning (10 Oct)** with the live model (airport + ECMWF), using only data from the evening of 9 Oct: **SKIP, 7.4%**. The grader on today's reports says no_sea. Correct.
+- The post's placeholders are replaced with this. Four Commons photos are shown with credits and CC BY-SA 4.0 links, including the miss.

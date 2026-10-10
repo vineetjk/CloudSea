@@ -1,0 +1,31 @@
+date,label,note,call_day,p,call
+2012-12-01,clear_no_sea,08:15 plains visible,2012-11-30,0.43448299169540405,MAYBE
+2014-03-08,cloud_sea,08:34 layer below with hilltop poking through (late),2014-03-07,0.20393142104148865,MAYBE
+2014-03-16,clear_no_sea,06:41-08:28 clear,2014-03-15,0.03477487713098526,SKIP
+2014-06-03,partial,07:19 clouds rolling over the next hill; plains visible by 08:00,2014-06-02,0.06325677037239075,SKIP
+2015-04-26,clear_no_sea,06:35 haze over visible land,2015-04-25,0.011783406138420105,SKIP
+2015-07-26,socked_in,08:17 forest in fog,2015-07-25,0.10339955985546112,SKIP
+2015-09-19,socked_in,06:06 trees in fog,2015-09-18,0.204114630818367,MAYBE
+2015-10-14,clear_no_sea,07:25-08:34 plains visible,2015-10-13,0.15751048922538757,MAYBE
+2015-11-28,cloud_sea,07:02-07:16 white layer below the sun,2015-11-27,0.388649046421051,MAYBE
+2016-01-31,partial,07:17-07:39 fog in valleys with hills and fields showing,2016-01-30,0.2756468951702118,MAYBE
+2016-02-08,cloud_sea,06:56 dense layer below,2016-02-07,0.30885636806488037,MAYBE
+2016-02-28,cloud_sea,06:43-07:36 layer below,2016-02-27,0.18052983283996582,MAYBE
+2016-03-06,cloud_sea,07:37 classic sea of clouds,2016-03-05,0.1076992005109787,SKIP
+2016-03-11,clear_no_sea,06:20-06:27 hazy plains,2016-03-10,0.027421290054917336,SKIP
+2016-06-07,socked_in,06:23-06:54 viewpoint in fog,2016-06-06,0.020969830453395844,SKIP
+2016-07-02,socked_in,07:16-08:16 fog and wet rock,2016-07-01,0.06795749068260193,SKIP
+2016-08-07,socked_in,06:57-08:23 in fog,2016-08-06,0.04706442356109619,SKIP
+2016-08-12,cloud_sea,07:38 layer below with peak; misty,2016-08-11,0.035936690866947174,SKIP
+2016-11-03,socked_in,07:35 in fog,2016-11-02,0.413427472114563,MAYBE
+2017-01-06,cloud_sea,07:52 fog in valleys with hills poking through,2017-01-05,0.667215883731842,GO
+2017-01-22,clear_no_sea,08:23 clear,2017-01-21,0.31386494636535645,MAYBE
+2017-02-11,cloud_sea,07:52 flat white layer below,2017-02-10,0.1053738072514534,SKIP
+2017-05-10,clear_no_sea,06:28-06:32 hazy plains,2017-05-09,0.008886837400496006,SKIP
+2017-06-03,partial,07:32 cloud bank below next to the hill; plains visible,2017-06-02,0.014501029625535011,SKIP
+2017-06-26,clear_no_sea,08:34 plains visible,2017-06-25,0.03485133498907089,SKIP
+2018-05-27,cloud_sea,08:13 layer below with peaks,2018-05-26,0.036848366260528564,SKIP
+2018-07-01,clear_no_sea,07:26 plains visible under overcast,2018-06-30,0.12367671728134155,SKIP
+2018-11-11,clear_no_sea,08:07-08:43 haze over visible plains,2018-11-10,0.3223881125450134,MAYBE
+2019-01-13,cloud_sea,06:58 sea of clouds at sunrise,2019-01-12,0.4821307957172394,MAYBE
+2020-05-27,socked_in,07:08 light fog among trees,2020-05-26,0.02380039542913437,SKIP

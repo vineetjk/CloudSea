@@ -1,8 +1,5 @@
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 1: Touch Grass](https://dev.to/challenges/hacktoberfest-week1-2026-10-05)*
 
-<!-- DRAFT. Every [PLACEHOLDER] must be replaced with real material, or removed, before publishing.
-Never fill a placeholder with an invented result. -->
-
 ## What I Built
 
 Every weekend, thousands of people in Bangalore set an alarm for 3:30 AM and ride 60 km north to Nandi Hills. The hope is to stand at 1,478 m as the sun comes up over a sea of clouds, with the plains buried under white and only the neighbouring hilltops sticking out. Some mornings you get that. Many mornings you get grey haze, a clear view of fields, or fog so thick you can't see the railing. Whether it's worth going is a coin you toss at bedtime.
@@ -14,13 +11,10 @@ At 8:30 PM every night CloudSea publishes **GO, MAYBE or SKIP** for tomorrow's s
 ![CloudSea on a phone: tonight's call, the photo upload, and the scoreboard](https://raw.githubusercontent.com/vineetjk/CloudSea/main/docs/screenshots/app-strip.png)
 *The live app on 10 Oct. The call shown is a daytime test run (issued 2:44 PM); the nightly job publishes the real one at 8:30 PM.*
 
-[PLACEHOLDER: one real story or photo from someone who used the call, once there is one.]
-
 ## Demo
 
 - **Live app:** https://cloudsea-web.onrender.com. Install it as a PWA on your phone.
 - **How it works and the backtest:** https://cloudsea-web.onrender.com/#/how
-- [PLACEHOLDER: 60-second screen recording, following `docs/DEMO.md`]
 
 The call is short enough to read half asleep, and it's written by Gemma in English, Kannada and Hindi:
 
@@ -127,11 +121,23 @@ What I didn't expect:
 
 Doubling the cores bought 5%, so the cheaper box is the right one.
 
-## Taking it outside
+## Taking it outside, remotely
 
-[PLACEHOLDER: the live scoreboard after the first graded mornings, Sun 11 and Mon 12 Oct, with a screenshot of https://cloudsea-web.onrender.com/#/scoreboard. October is early in the fog season, so expect SKIPs; a SKIP that the airport and photos confirm is a real result.]
+I couldn't get to the hill this weekend, and the app went live the day before the deadline, so nobody has used it at the summit yet. Instead I tested it against people who had already been up there and shared their photos.
 
-[PLACEHOLDER: summit photos people uploaded, with their permission, and what Gemma and the uploader said about each.]
+Wikimedia Commons has Nandi Hills photos whose camera clock places them at dawn. For 30 mornings between 2012 and 2020 you can see what the view below looked like. I ran CloudSea's model on each of those mornings, using only the airport reports from the evening before. It was the airport-only version, because the archived ECMWF runs start in 2024, and it was trained only on 2021–2025, so it had never seen any of these days.
+
+- It ranked the mornings well enough to be useful: **ROC-AUC 0.71**. Cloud-sea mornings got 25% on average, the rest 12–15%.
+- **It said GO once, and that morning was a cloud sea.** It never said GO on a clear morning or one inside the fog.
+- **It missed 4 of the 10 cloud seas with a SKIP.** Most fell in months it treats as off-season (March, May, August). On one there was nothing at the airport at all, probably valley fog it can't see. That is the gap the photo uploads are meant to close.
+
+| ![6 Jan 2017: fog fills the valleys, hills poke through](https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Nandi_Hills%2C_Bangalore.jpg/960px-Nandi_Hills%2C_Bangalore.jpg) | ![13 Jan 2019: sunrise over the cloud sea, a crowd at the railing](https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Nandi_Hills%2C_Bengaluru.jpg/960px-Nandi_Hills%2C_Bengaluru.jpg) |
+|---|---|
+| **6 Jan 2017**, cloud sea. CloudSea: **GO, 67%**. *[Photo](https://commons.wikimedia.org/wiki/File:Nandi_Hills,_Bangalore.jpg) by RITWIK J, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)* | **13 Jan 2019**, cloud sea. CloudSea: **MAYBE, 48%**. *[Photo](https://commons.wikimedia.org/wiki/File:Nandi_Hills,_Bengaluru.jpg) by Sidhant Soni, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)* |
+| ![6 Mar 2016: a classic sea of clouds at sunrise](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Sun_rising_over_a_blanket_of_clouds%2C_Nandi_Hills%2C_Karnataka.jpg/960px-Sun_rising_over_a_blanket_of_clouds%2C_Nandi_Hills%2C_Karnataka.jpg) | ![7 Jun 2016: the viewpoint inside the fog](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Nandi_hills%2C_Karnataka.jpg/960px-Nandi_hills%2C_Karnataka.jpg) |
+| **6 Mar 2016**, cloud sea. CloudSea: **SKIP, 11%**, a miss. *[Photo](https://commons.wikimedia.org/wiki/File:Sun_rising_over_a_blanket_of_clouds,_Nandi_Hills,_Karnataka.jpg) by Sri chakra pranav, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)* | **7 Jun 2016**, inside the fog. CloudSea: **SKIP, 2%**. *[Photo](https://commons.wikimedia.org/wiki/File:Nandi_hills,_Karnataka.jpg) by Shravan Kamath94, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)* |
+
+**This morning, 10 Oct.** Using only the evening of 9 Oct, the live model (airport + ECMWF) says **SKIP, 7%**. The grader, run this afternoon on this morning's airport reports, says **no cloud sea**: visibility 4 km in mist, no low ceiling, summit-level humidity 64%. One real call, and it was right. The first scheduled call goes out at 8:30 PM tonight, and the scoreboard at https://cloudsea-web.onrender.com/#/scoreboard fills from 8:15 AM tomorrow, right or wrong.
 
 ## Things that went wrong
 
@@ -148,8 +154,6 @@ Doubling the cores bought 5%, so the cheaper box is the right one.
 - 71 Python tests (label, leakage, guardrail, translation, EXIF stripping, API) and 24 frontend tests.
 - [BUILD_LOG.md](https://github.com/vineetjk/CloudSea/blob/main/BUILD_LOG.md) has every decision, dead end and number with a timestamp.
 
-[PLACEHOLDER: agent session embed (DevRelay agent_session tag) and/or the Entire checkpoint link]
-
 ## What's next
 
 - Collect summit photos through the fog season and retrain on photo-confirmed labels.
@@ -159,6 +163,6 @@ Doubling the cores bought 5%, so the cheaper box is the right one.
 
 ## AI assistance
 
-I built this with Claude Code, an AI coding agent, as my pair. It wrote much of the code and did much of the research, and it proposed the cloud-sea label and the GO/SKIP thresholds from the data, with the reasoning in BUILD_LOG.md. [PLACEHOLDER: what you reviewed, changed or decided yourself.] Every number above comes from code in the repo.
+I built this with Claude Code, an AI coding agent, as my pair. I wrote the brief and its rules: open models and open data doing the real work, no closed model APIs, no invented data, and an honest account of what the proxy can't see. The agent wrote much of the code, did much of the research, and proposed the cloud-sea label and the GO/SKIP thresholds from the data when I asked it to run every phase; the reasoning is in BUILD_LOG.md. Every number above comes from code in the repo.
 
 *Partner tech: Gemma 4 (Google), TabPFN (Prior Labs), Render, Entire. Weather data by [Open-Meteo.com](https://open-meteo.com/); airport reports via the Iowa Environmental Mesonet. A forecast, not a guarantee.*
