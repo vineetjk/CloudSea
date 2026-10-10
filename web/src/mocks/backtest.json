@@ -1,0 +1,16 @@
+{
+  "season": "2025-26",
+  "headline": { "weekends": 22, "every_weekend_seas": 5, "cloudsea_trips": 6, "cloudsea_seas": 4 },
+  "metrics": [
+    { "model": "TabPFN", "brier": 0.11, "roc_auc": 0.84, "go_precision": 0.62 },
+    { "model": "Logistic regression", "brier": 0.13, "roc_auc": 0.78, "go_precision": 0.5 },
+    { "model": "Climatology (monthly rate)", "brier": 0.16, "roc_auc": 0.5, "go_precision": null }
+  ],
+  "calibration": [
+    { "bin": "0-10%", "predicted": 0.05, "observed": 0.04, "n": 80 },
+    { "bin": "10-20%", "predicted": 0.15, "observed": 0.12, "n": 41 },
+    { "bin": "20-40%", "predicted": 0.29, "observed": 0.33, "n": 24 },
+    { "bin": "40-60%", "predicted": 0.49, "observed": 0.42, "n": 12 },
+    { "bin": "60-100%", "predicted": 0.73, "observed": 0.67, "n": 9 }
+  ]
+}
