@@ -148,10 +148,11 @@ def find_service(http: httpx.Client, owner: str, name: str) -> dict | None:
 
 
 def set_plan(http: httpx.Client, sid: str, plan: str) -> None:
-    previous = latest_deploy(http, sid)["id"]
+    # Render applies a plan change in place: the instance restarts, but no new deploy is created,
+    # so there is nothing to wait on here. The runner's --wait-model covers the restart.
     http.patch(f"/services/{sid}", json={"serviceDetails": {"plan": plan}}).raise_for_status()
-    log(f"resized {sid} to {plan}")
-    wait_deploy(http, sid, want_new_after=previous)
+    log(f"resized {sid} to {plan}; waiting 90 s for the restart")
+    time.sleep(90)
 
 
 def main() -> None:

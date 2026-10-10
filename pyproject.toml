@@ -39,5 +39,9 @@ packages = ["cloudsea"]
 [tool.ruff]
 line-length = 110
 
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "SIM", "PLW1510"]
+ignore = ["E501", "SIM108"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

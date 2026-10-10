@@ -46,7 +46,11 @@ def _client() -> httpx.Client:
 
 def _get(http: httpx.Client, url: str, params: dict, attempts: int = 4) -> dict:
     for attempt in range(attempts):
-        r = http.get(url, params=params)
+        try:
+            r = http.get(url, params=params)
+        except httpx.TransportError:  # timeouts and dropped connections happen on long backfills
+            time.sleep(5 * (attempt + 1))
+            continue
         if r.status_code == 429 or r.status_code >= 500:
             time.sleep(5 * (attempt + 1))
             continue

@@ -1,7 +1,6 @@
 """Phase 1 report: candidate cloud-sea labels, base rates by month, example days, and a check against dated photos."""
 from __future__ import annotations
 
-from pathlib import Path
 
 import pandas as pd
 
