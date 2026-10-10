@@ -1,0 +1,117 @@
+# CloudSea build log
+
+Times are IST. Newest entries at the bottom. Numbers here are measured or quoted from a cited source; anything estimated says so.
+
+## 2026-10-10 12:18 — Start
+
+- Challenge: DEV Hacktoberfest Open-Source AI Challenge, Week 1, theme "Touch Grass" (tag `#hf26challenge`). Submissions close 2026-10-11 23:59 PDT = **2026-10-12 12:29 IST**. That leaves about 48 wall-clock hours and two possible live sunrises: Sun 11 Oct and Mon 12 Oct.
+- Machine: MacBook M2, 8 GB unified memory, macOS 15.0.1, Ollama 0.35.1, Docker 29.6.1, Python 3.14 (too new for some ML wheels; the project will pin 3.12).
+
+## 2026-10-10 12:30 — Phase 0: docs verified
+
+What we checked against current docs, and what changed in the plan because of it.
+
+**Gemma 4 on Ollama**
+- Gemma 4 needs Ollama ≥ 0.20.0; tool-calling fixes landed in 0.20.6. Local 0.35.1 is fine. ([v0.20.0](https://github.com/ollama/ollama/releases/tag/v0.20.0), [v0.20.6](https://github.com/ollama/ollama/releases/tag/v0.20.6))
+- `gemma4:e2b` has two builds behind one tag: a 4.6 GB llama.cpp build (Q4_K_M) and a 7.5 GB MLX build. Since Ollama 0.40, Apple Silicon defaults to MLX. **Decision:** pin `gemma4:e2b-it-q4_K_M` everywhere, so the Mac and Render run identical weights. ([tags](https://ollama.com/library/gemma4/tags), [v0.40.0](https://github.com/ollama/ollama/releases/tag/v0.40.0))
+- E2B supports vision, tools and thinking. Thinking is on by default, so we send `think: false` to save CPU. ([model page](https://ollama.com/library/gemma4:e2b), [v0.34.3](https://github.com/ollama/ollama/releases/tag/v0.34.3))
+- `format` accepts a JSON schema and works with images. A third-party report says `format` combined with `tools` can block tool calls. **Decision:** the writer agent uses tools and returns plain text; the photo rater uses image + schema and no tools. ([structured outputs](https://docs.ollama.com/capabilities/structured-outputs))
+- Licence: Apache 2.0. ([ai.google.dev/gemma/apache_2](https://ai.google.dev/gemma/apache_2))
+- No published Ollama tokens/sec on x86 CPUs. Our Render benchmark will be original data.
+
+**TabPFN (`tabpfn-client` 0.6.1)**
+- Python 3.10–3.13. Auth via the `TABPFN_TOKEN` env var, no prompts. ([auth](https://docs.priorlabs.ai/api-reference/python/tabpfn-client/authentication.md))
+- Hosted model limits (1M rows, 20k features) are far above our ~3k rows × <60 features. Fits are free; predictions cost tokens against 5M/day and 20M/month. ([models](https://docs.priorlabs.ai/models.md), [metering](https://docs.priorlabs.ai/api/metering.md))
+- The terms require non-personal training data (ours is weather and labels). §7.4 allows Prior Labs to use uploaded data unless you opt out. ([terms](https://priorlabs.ai/terms))
+
+**Render**
+- Cron jobs can send requests to private services (they can't receive traffic). Same region and workspace required. ([private network](https://render.com/docs/private-network))
+- Persistent disks attach to services, never to cron jobs. A disk pins a service to one instance with no zero-downtime deploys. ([disks](https://render.com/docs/disks)) **Decision (proposed):** photos go in Postgres `bytea`, not on a disk.
+- Billing is per second. Cron jobs bill per minute of run time plus $1/month each (e.g. 4c-8g at $0.00405/min). Always-on 8 GB instances cost $135–175/month and 16 GB instances $200–225/month. Static sites are free. ([pricing](https://render.com/pricing), [cron jobs](https://render.com/docs/cronjobs))
+- Plan names changed in August 2026 to IDs like `2c-8g`; old names still work. ([compute plans](https://render.com/docs/compute-plans))
+- No GPU instances listed.
+
+**Weather data**
+- IEM's VOBL archive starts 2008-07-21, but rows before ~2011 come from ISD and have no sky or weather groups. Units: `vsby` in statute miles, `skyl` in feet. ([IEM help](https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?help))
+- **Train/serve skew finding.** Open-Meteo's Historical Forecast API stitches together the first hours of each model run. A dawn value from it is close to an analysis, not something known at 8:30 PM the night before, so a model trained on it would look better in the backtest than it is live. Sources without that problem start in 2024:
+  - The Single Runs API (`ecmwf_ifs` from 2024-03-14) gives the exact 06 UTC run available by 8:30 PM IST.
+  - The Previous Runs API (from ~2024-02) has fewer variables. ([historical forecast](https://open-meteo.com/en/docs/historical-forecast-api), [single runs](https://open-meteo.com/en/docs/single-runs-api), [previous runs](https://open-meteo.com/en/docs/previous-runs-api))
+  - Proposed: evening METAR features (2011+) plus the 06 UTC IFS run (2024+). To decide at the Phase 0 review.
+- `relative_humidity_850hPa` is not in the reanalysis archive. It is in the Historical Forecast API (`best_match`, `gfs_seamless`) from 2021-03. That's acceptable for building the *label*, which is an after-the-fact judgement, but not as a forecast feature.
+- Open-Meteo's `elevation` downscaling only adjusts temperature and pressure; cloud and fog fields are grid-cell values.
+- Elevations:
+  - VOBL is 915 m (3003 ft, [AIP India](https://aim-india.aai.aero/eaip/eaip-v2-09-2026/eAIP/IN-AD%202.1VOBL-en-GB.html)).
+  - Nandi Hills summit is 1478 m ([Wikipedia](https://en.wikipedia.org/wiki/Nandi_Hills,_India); not checked against Survey of India).
+  - The summit is ~563 m (1847 ft) above the airport, at roughly 850 hPa (GFS surface pressure 853 hPa at the summit point).
+- Open-Meteo data is CC BY 4.0; attribution link "Weather data by Open-Meteo.com" required. ([licence](https://open-meteo.com/en/licence))
+
+**Satellite (report only)**
+- MOSDAC INSAT-3DS fog product: no files 06:30–09:30 IST on the sampled day, so it misses the sunrise window. Hard.
+- Meteosat-9 IODC: 15-minute scans exist at dawn; account needed; native format. Medium.
+- NASA GIBS Himawari visible tiles: cover Bangalore Aug–Oct 2026 but not earlier months; Bangalore is at the edge of the disk. Easy as a picture, not as a label.
+- **Decision:** don't build. Possibly show a Himawari thumbnail on the live scoreboard as a stretch goal.
+
+**Entire**
+- Captures sessions through Claude Code hooks and git hooks; checkpoints are stored under `refs/entire/checkpoints/` and pushed with normal `git push`. A session that started before `entire enable` is not captured live; `entire session attach` can link it afterwards. ([docs](https://docs.entire.io/agents/setup))
+
+## 2026-10-10 12:41 — Phase 0: VOBL METAR archive downloaded
+
+- `make data-metar` (for now `python3 cloudsea/data/iem.py`): one request per station-year, 2 s pause. The first run died mid-2021 with `IncompleteRead` because IEM dropped a long chunked response. Writes go through a `.part` file and an atomic rename, so no partial file was left behind. Added a retry for dropped connections and resumed.
+- 2008–2026: 297,037 reports in 19 yearly CSVs (53 MB, gitignored, reproducible).
+- Coverage: 2008–2010 rows have no sky or weather groups (0–16%). 2011 is partial (157 days). 2012–2025 are full years, 92–98% of reports with sky groups. The dawn window (05:30–07:30 IST) holds a median of **5 reports** (half-hourly), and 336–366 days per year have ≥3 dawn reports.
+- Dawn frequency by month (2011+, a day counts if any dawn report shows it), full table in `docs/phase0/metar_summary.md`:
+  - Fog (FG): Oct 8%, Nov 21%, Dec 33%, Jan 34%, Feb 14%, ~0% Apr–Sep.
+  - Mist (BR): 67–77% of dawns Oct–Feb.
+  - BKN/OVC/VV below 1000 ft: Oct 31%, Nov 48%, Dec 55%, Jan 47%.
+  - Any SCT-or-more layer below summit height (<1800 ft above the airport): 78–86% Oct–Jan, but **87–97% in Jun–Sep**.
+- **Surprise:** "cloud below the summit" is true almost every monsoon morning. Then the summit is usually inside the cloud rather than above it. Airport data alone can't tell those apart, so the label needs a summit-level humidity term (~850 hPa).
+- October is the start of the fog season, not the peak. Expect mostly SKIP calls during the live test.
+
+## 2026-10-10 12:44 — Phase 0: Open-Meteo spike (one season, three points)
+
+- Pulled the Historical Forecast API for Oct 2025–Feb 2026 at the airport, the plains south of Nandi and the summit, for `best_match` and `gfs_seamless`. All 11 requested variables came back 100% populated, including `relative_humidity_850hPa` and `_900hPa`, `cloud_cover_low`, `visibility` and `boundary_layer_height`.
+- The summit request snaps to a grid cell at 1422 m (13.39 N, 77.66 E), matching the elevation reported earlier.
+- Dawn (01 UTC = 06:30 IST) values over the season (151 days):
+  - 850 hPa RH: min 9 / median 68 / max 100%.
+  - 900 hPa RH: median 82–87%.
+  - So the air at summit height varies a lot while the layer below is usually moist. That's the contrast the label needs.
+- **GFS visibility is useless here:** min 13 km, flat-capped at 24 km, so it never forecasts fog. ECMWF (`best_match`) goes down to 60–80 m. Use ECMWF fields for anything about fog.
+- Pressure-level values are nearly identical at the plains and summit points (same air column). The useful contrast is between levels, not between points.
+
+## 2026-10-10 12:52 — Phase 0: environment, a secrets slip, Entire
+
+- `uv` 0.13.0 with Python 3.12.15 (tabpfn-client supports 3.10–3.13). `make setup` creates the env and installs a pre-commit hook (`scripts/check-secrets.sh`) that blocks anything shaped like a TabPFN or Render key, and any `.env` file. Tested with a fake key; it blocked the commit.
+- **Slip:** both API keys were first pasted into `.env.example`, the committed template, instead of `.env`. Caught before any commit. The values were moved to the gitignored `.env` without being printed. Because the editor had already shown them to the agent session, both keys must be rotated before any session transcript is published (pending as of 13:20).
+- Entire CLI 0.11.4 enabled for Claude Code with telemetry off: 9 agent hooks in `.claude/settings.json`, git hooks for commit-msg, post-commit, post-rewrite, pre-push and prepare-commit-msg, and `.entire/settings.json`. Session pushing is off locally (`.entire/settings.local.json`) until the key rotation is confirmed.
+
+## 2026-10-10 12:56 — Phase 0: TabPFN smoke test
+
+- `make tabpfn-smoke`, with synthetic data only (300 train / 100 test rows × 30 features).
+- The API's default model is **TabPFN v3.5** (8 estimators); 21 model versions are listed.
+- Timing: fit 7.0 s, predict 2.3 s. A predict costs the 10,000-credit minimum against a 20M monthly limit (resets 1 Nov), so the backtest must batch its predictions.
+
+## 2026-10-10 13:10 — Phase 0: Gemma 4 E2B on the Mac (M2, 8 GB)
+
+- Model `gemma4:e2b-it-q4_K_M`: 4.6 GB download, 4.6B parameters including per-layer embeddings, Q4_K_M, needs Ollama ≥ 0.30.9. `ollama show` lists vision, audio, tools and thinking (thinking on by default).
+- Test set: 14 Creative Commons photos of Nandi Hills from Wikimedia Commons (`make gemma-pull` fetches them and writes `ATTRIBUTION.md`).
+  - I labelled them by eye: 3 cloud sea, 1 partial, 3 clear, 4 socked in, 3 too ambiguous to score.
+  - These are reference labels for benchmarking, not ground truth.
+- Speed: cold load 7–14 s, warm generation **22–28 tok/s**, prompt processing 400–500 tok/s, about **4 s per photo**.
+- Memory: Ollama's resident memory was 1.0–2.5 GB, but macOS swapped 2.5–4.2 GB of other apps. 8 GB works with VS Code open, but only just.
+- `ollama ps` reports the model as 0.24 GB. It doesn't count the memory-mapped per-layer embeddings, so don't size servers from it.
+
+**First prompts failed (v1, kept in `bench_gemma_mac-m2-8gb_v1-naive-prompts.json`):**
+- Writer agent: **0/5**. Told to "call every tool you need", it called only `get_leave_by` and wrote filler ("The forecast for tomorrow is available").
+- Photo rater: valid JSON 14/14, but agreed with the reference labels **3/11**. It answered `cloud_sea` for nearly everything, including all four fog-at-the-summit photos, always with confidence 0.95.
+
+**What fixed them (v2, the current code):**
+- Writer: name all four tools in the system prompt. Now **5/5**, all four tools called in one round, 2.2–3.3 s, every number traceable to a tool result. The harness also re-asks for any tool the model skips; this was never needed in testing.
+  - Still missing: it leaves out the probability and the "not a guarantee" line. The Phase 3 guardrail will check that required facts are present as well as that numbers are valid.
+- Photo rater: ask evidence questions *before* the label (nearby objects hazy? ground visible far below? a layer below the horizon?).
+  - **7–8/11** across runs (3/11 before). Fog at the summit is now recognised in 3–4 of 4 runs.
+  - Remaining error: clear mornings with clouds in the sky get called `cloud_sea` or `partial`.
+  - Dead ends:
+    - Deriving the label in code from the answers did worse (4–5/11); the model says "layer below" for every photo.
+    - Thinking mode did worse (3/11) and was 5× slower (~20 s per photo).
+  - Confidence stays at 0.95 regardless, so it is not used.
+  - Uploaders confirm or correct the label with one tap, and only confirmed labels count for grading.
