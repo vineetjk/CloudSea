@@ -57,3 +57,22 @@ test:  ## Run unit tests
 
 lint:
 	uv run ruff check cloudsea tests
+
+# --- Phase 3: API and local Postgres ---
+.PHONY: db-up db-down api test-db
+LOCAL_DB := postgresql://postgres:cloudsea@localhost:5432/cloudsea
+TEST_DB := postgresql://postgres:cloudsea@localhost:5432/cloudsea_test
+
+db-up:  ## Start local Postgres 16 in docker (docker-compose.yml), plus a cloudsea_test DB
+	docker compose up -d --wait db
+	docker compose exec -T db psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname = 'cloudsea_test'" | grep -q 1 \
+		|| docker compose exec -T db createdb -U postgres cloudsea_test
+
+db-down:  ## Stop local Postgres (data stays in the docker volume)
+	docker compose down
+
+api:  ## Run the API on :8000 with reload (uses DATABASE_URL, default the local docker DB)
+	DATABASE_URL=$${DATABASE_URL:-$(LOCAL_DB)} uv run uvicorn cloudsea.api.main:app --reload --port 8000
+
+test-db:  ## All tests, including Postgres integration tests (drops tables in the cloudsea_test DB)
+	TEST_DATABASE_URL=$${TEST_DATABASE_URL:-$(TEST_DB)} uv run pytest -q

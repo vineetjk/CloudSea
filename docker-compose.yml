@@ -1,0 +1,22 @@
+# Local Postgres 16 for the API and jobs. `make db-up`, then
+#   DATABASE_URL=postgresql://postgres:cloudsea@localhost:5432/cloudsea
+# Dev-only credentials; production uses Render Postgres.
+services:
+  db:
+    image: postgres:16
+    container_name: cloudsea-pg
+    environment:
+      POSTGRES_PASSWORD: cloudsea
+      POSTGRES_DB: cloudsea
+    ports:
+      - "5432:5432"
+    volumes:
+      - cloudsea-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cloudsea"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  cloudsea-pg:
