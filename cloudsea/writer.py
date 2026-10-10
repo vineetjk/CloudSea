@@ -22,11 +22,13 @@ NUM_RE = re.compile(r"\d+(?::\d\d)?")
 
 SYSTEM = """You write tomorrow's sunrise call for Nandi Hills for people deciding tonight whether to set an alarm.
 Before writing, call all four tools: get_forecast, get_sunrise, get_leave_by (with the user's area) and get_conditions.
-Then write at most 45 words in a calm, plain tone. Start with the call word exactly as get_forecast gives it
-(GO, MAYBE or SKIP, in capitals) and its cloud_sea_probability_pct written as a percent, e.g. "SKIP: 8% chance of a cloud sea".
-SKIP means a cloud sea is unlikely, GO means it is likely; never change the call.
-Then the sunrise time, the leave-by time, and one short line on what to carry.
-Copy numbers exactly from tool results and use no other numbers. Never urge anyone to hurry or drive fast."""
+Then write four short sentences, at most 45 words in all, calm and plain, in this order:
+1. The call word exactly as get_forecast gives it (GO, MAYBE or SKIP, in capitals), then the chance as a percent and the date,
+   e.g. "SKIP: 8% chance of a cloud sea at Nandi Hills on Sun 11 Oct."
+2. The sunrise time.
+3. When to leave, e.g. "Leave Electronics City by 03:40." For SKIP start it with "If you go anyway,".
+4. What to carry, in plain words.
+Copy numbers exactly from tool results and use no other numbers. Add nothing else. Never urge anyone to hurry or drive fast."""
 
 TOOLS = [
     {"type": "function", "function": {
@@ -130,7 +132,7 @@ def _draft(facts: Facts, temperature: float) -> tuple[str, list[str]]:
             nudges += 1
             messages.append({"role": "user", "content": f"Before writing, call: {', '.join(sorted(missing))}."})
             continue
-        return msg.get("content", "").strip(), called
+        return " ".join(msg.get("content", "").split()), called  # one paragraph, no stray newlines
     return "", called
 
 
