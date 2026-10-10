@@ -71,7 +71,8 @@ class Facts:
             "get_leave_by": {"area": self.area_label, "drive_minutes": self.drive_minutes,
                              "buffer_minutes": self.buffer_minutes, "leave_by": self.leave_by},
             "get_conditions": {"summit_temp_c": self.summit_temp_c, "wind_kmh": self.wind_kmh,
-                               "rain_chance_pct": self.rain_chance_pct, "carry": self.carry},
+                               "rain_chance_pct": self.rain_chance_pct,
+                               "carry": [c[:1].lower() + c[1:] for c in self.carry]},  # reads naturally mid-sentence
         }.get(name, {"error": f"unknown tool {name}"})
 
     def allowed_numbers(self) -> set[str]:
@@ -103,6 +104,34 @@ def check(text: str, facts: Facts) -> list[str]:
         problems.append("leave-by missing")
     if BANNED.search(text):
         problems.append("hurry language")
+    problems += _misplaced(text, facts)
+    return problems
+
+
+TIME_RE = re.compile(r"\b\d{1,2}:\d\d\b")
+
+
+def _misplaced(text: str, facts: Facts) -> list[str]:
+    """Numbers must sit where they belong, not merely appear somewhere in the tool results.
+    A pure "is this number in the facts" check passes "Sunrise 03:40, leave by 06:07" (both are real values)."""
+    problems = []
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        for t in TIME_RE.findall(sentence):
+            t = t.zfill(5)
+            if t == facts.leave_by and not re.search(r"\bleav", sentence, re.I):
+                problems.append(f"leave-by time {t} outside the leave sentence")
+            elif t in (facts.sunrise, facts.first_light) and not re.search(r"sun|light|dawn", sentence, re.I):
+                problems.append(f"sun time {t} outside a sunrise sentence")
+            elif t not in (facts.leave_by, facts.sunrise, facts.first_light):
+                problems.append(f"time {t} is not a tool time")
+            elif re.search(r"\bleav", sentence, re.I) and t != facts.leave_by and not re.search(r"sun|light", sentence, re.I):
+                problems.append(f"{t} given as the leave-by time")
+        for m in re.finditer(r"(\d+)\s*%\s*(?:chance|probability)", sentence, re.I):
+            if int(m.group(1)) != facts.probability_pct:
+                problems.append(f"{m.group(1)}% given as the cloud-sea chance")
+        for m in re.finditer(r"(-?\d+)\s*°", sentence):
+            if facts.summit_temp_c is None or int(m.group(1)) != facts.summit_temp_c:
+                problems.append(f"{m.group(1)}° is not the summit temperature")
     return problems
 
 

@@ -69,3 +69,26 @@ def test_translation_check():
     assert writer.check_translation(good.replace("8%", "18%"), en, "SKIP")
     assert writer.check_translation(good.replace("ಮೋಡದ", "warm"), en, "SKIP")
     assert writer.check_translation(good.replace("SKIP", "GO"), en, "SKIP")
+
+
+# Corruptions that use only real tool values but put them in the wrong place.
+GOOD = "SKIP: 8% chance of a cloud sea at Nandi Hills on Sun 11 Oct. Sunrise is at 06:09. Leave Electronics City by 03:20. Carry a light jacket (17°C at the top)."
+
+
+def test_correct_text_has_no_misplaced_numbers():
+    assert writer.check(GOOD, facts()) == []
+
+
+def test_swapped_times_are_caught():
+    bad = GOOD.replace("06:09", "XX").replace("03:20", "06:09").replace("XX", "03:20")
+    assert writer.check(bad, facts()) != []
+
+
+def test_rain_chance_passed_off_as_cloud_sea_chance_is_caught():
+    bad = GOOD.replace("8% chance", "10% chance")
+    assert any("cloud-sea chance" in p for p in writer.check(bad, facts()))
+
+
+def test_wrong_temperature_is_caught_even_if_number_exists_elsewhere():
+    bad = GOOD.replace("17°C", "20°C")   # 20 is the buffer minutes
+    assert any("summit temperature" in p for p in writer.check(bad, facts()))
