@@ -57,7 +57,7 @@ flowchart LR
 | Monthly climatology | 0.204 | 0.70 |
 | ECMWF raw low cloud | 0.398 | 0.55 |
 
-Going on all 43 weekend mornings would have found 17 cloud seas. Going only on GO: 12 trips, 10 cloud seas. Earlier seasons were harder, with out-of-fold AUC between 0.55 and 0.77. Details and charts: [docs/results/](docs/results/), [BUILD_LOG.md](BUILD_LOG.md).
+Going on all 43 weekend mornings would have found 17 cloud seas. Going only on GO: 12 trips, 10 cloud seas. Earlier seasons were harder: out-of-fold AUC for the live model was 0.72, 0.55 and 0.74. Details and charts: [docs/results/](docs/results/), [BUILD_LOG.md](BUILD_LOG.md).
 
 ## Run it locally
 

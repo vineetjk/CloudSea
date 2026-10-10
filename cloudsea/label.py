@@ -5,7 +5,7 @@ Inputs per date:
 * humidity at summit height (850 hPa) and in the fog layer (900 hPa) at 06:30 IST, from Open-Meteo's
   Historical Forecast API (model-derived, not observed)
 
-The airport (915 m) is 15 km south-east of the summit (1478 m) and 563 m lower. It can see a fog or stratus
+The airport (915 m) is 19 km south-south-east of the summit (1478 m) and 563 m lower. It can see a fog or stratus
 layer at or near the ground, and a cloud deck near summit height. It cannot see how thick the layer is.
 The 850 hPa humidity stands in for "is the summit above the cloud or inside it".
 

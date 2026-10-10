@@ -68,7 +68,7 @@ Definitions are in `cloudsea/label.py`. The chosen one is `LABEL = "B_low_layer_
 ## What this label can't know
 
 - **Cloud tops.** The airport sees the base of a layer, not its top. A thick layer can bury the summit (socked in); a thin one can show as patchy fog.
-- **Valley fog the airport misses.** The airport is 15 km south-east of the hill. Fog in the valleys to the north and west can make a sea at Nandi while the airport is clear (2017-02-11 in the photo check is probably this).
+- **Valley fog the airport misses.** The airport is 19 km south-south-east of the hill. Fog in the valleys to the north and west can make a sea at Nandi while the airport is clear (2017-02-11 in the photo check is probably this).
 - **Timing.** The window is 05:30-07:30 IST at half-hourly reports. Fog that forms after 07:30 or lifts before sunrise is miscounted.
 - **The 850 hPa humidity is a model estimate,** one grid cell, not a measurement at the summit.
 - **Haze vs cloud.** Thick haze over the plains can look like a sea in photos and is not a low layer in the reports.

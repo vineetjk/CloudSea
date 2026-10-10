@@ -176,7 +176,7 @@ The user asked me to run all phases without stopping, so I chose the label mysel
 
 - **Honest reading:**
   - With ECMWF features, TabPFN and the tree are **tied**. TabPFN's edge shows where data is thin. Out of fold it has the better Brier in every season (0.208 vs 0.260, 0.241 vs 0.273, 0.197 vs 0.218), with the biggest gap in 2022-23, trained on only 547 rows.
-  - The earlier seasons are harder than the test season. Out-of-fold AUC was 0.72 (2022-23), 0.55 (2023-24) and 0.77 (2024-25), against 0.87 on 2025-26. Expect live skill somewhere in that range, not at the top of it. Per-season numbers: `docs/results/oof_by_season.csv`.
+  - The earlier seasons are harder than the test season. Out-of-fold AUC for the live model was 0.72 (2022-23), 0.55 (2023-24) and 0.74 (2024-25), against 0.87 on 2025-26. Expect live skill somewhere in that range, not at the top of it. Per-season numbers: `docs/results/oof_by_season.csv`.
   - The textbook radiation-fog rule (spread ≤ 2 °C, wind ≤ 8 km/h) fired on 0% of training nights at 19:30 IST; Bangalore evenings are breezy and fog forms later. The loosened version was chosen on training rows only.
   - Raw ECMWF low cloud is a poor probability on its own (Brier 0.398, worse than climatology). TabPFN turns it into a calibrated call.
 - **Thresholds (TabPFN, airport + ECMWF, from out-of-fold):** SKIP below 15%, GO at 60% or above, MAYBE in between. Targets: GO precision ≥ 60% and seas among SKIP nights ≤ 10%. I chose them myself because the user asked for all phases without stopping; they're one place in `backtest.json`.
@@ -212,3 +212,28 @@ The user asked me to run all phases without stopping, so I chose the label mysel
   - A plan change is applied in place without a new deploy, so the benchmark waited for a deploy that never came. Fixed by not waiting on deploys after a resize.
   - Wikimedia returned 403 to Render's IPs until the User-Agent carried a contact URL.
   - Final numbers, Gemma 4 E2B on CPU: 2c-8g 6.1 tok/s, a call in 11.8 s, a photo in 29.8 s; 4c-8g 6.4 tok/s for $40/month more.
+
+## 2026-10-10 14:50 — Phases 4–6: photos, grading, translations, docs
+
+- **Production run.** The `cloudsea-nightly` cron was triggered by hand on Render at 14:32 and 14:44 IST. Both runs went end to end: live METARs, the ECMWF run, TabPFN, private Gemma, Postgres. The public API serves **SKIP, 8%, for Sun 11 Oct**. This is a daytime test without the evening reports; the scheduled 20:30 IST run replaces it.
+- **Auto-deploy.** It never fired: a repo added by public URL gets no push webhook. `scripts/render_deploy.py deploy` triggers deploys through the API instead.
+- **Kannada and Hindi (stretch goal).**
+  - First production run: both translations empty. Recording the reasons showed Gemma dropped the call word, pasted glossary phrases that weren't in the English, and read "Sun" (Sunday) as "evening" in Kannada.
+  - Fix: the call word is stripped and put back in code, only glossary terms present in the text are passed, and weekday names are in the glossary.
+  - Without the glossary, Kannada rendered "cloud sea" as "cloudy weather".
+  - Now both appear on the live call, labelled as machine translations.
+- **Phase 4 (photos).**
+  - Client side: resize to ≤ 200 KB and check the EXIF time and GPS before upload.
+  - Server side: re-check the dawn window, re-encode with Pillow (no EXIF, ICC or comments survive; tested), 5 uploads per IP per day, Gemma rating in the background with up to 3 attempts, one-tap confirm, private by default.
+- **Phase 5 (grading).**
+  - The grader stores the airport outcome with its evidence and adds a training row.
+  - Two or more uploaders agreeing on cloud sea, clear or socked in override the airport label (partial keeps it). This is applied by the grader and again by the next nightly run, because photos arrive after 08:15.
+  - Grader dry run on today's dawn (10 Oct): **no_sea**. 5 reports, low layer in 0, lowest visibility 4007 m, no ceiling, 850 hPa humidity 64%.
+- **Fact-check of my own docs.** Computing from coordinates, the airport is **19.3 km** from the summit, not the 15 km I had written in three places. The live model's 2024-25 out-of-fold AUC is 0.74; the 0.77 I quoted was the airport-only model. Both fixed.
+- **Phase 6:**
+  - README: setup in 8 commands, Blueprint deploy, results, licences and attribution.
+  - Apache-2.0 LICENSE.
+  - Result charts with a validated palette.
+  - Screenshots of the live app and share cards.
+  - `docs/DEMO.md` (60 s script) and `docs/POST_DRAFT.md`, with placeholders for every live result.
+- **Tests:** 67 passing with Postgres (label, leakage, writer guardrail, translation check, EXIF stripping, photo window, share cards, API integration, photo relabelling), plus 24 frontend tests.
