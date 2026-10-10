@@ -1,0 +1,480 @@
+{
+  "label": "render-2c-8g",
+  "model": "gemma4:e2b-it-q4_K_M",
+  "ollama_version": "0.35.1",
+  "machine": "Linux-7.0.0-1009-aws-x86_64-with-glibc2.36",
+  "memory_before": {},
+  "text": {
+    "cold": {
+      "load_s": 28.65,
+      "prompt_tokens": 39,
+      "prompt_tok_s": 48.5,
+      "gen_tokens": 149,
+      "gen_tok_s": 5.7,
+      "total_s": 55.51
+    },
+    "warm_gen_tok_s_median": 6.1,
+    "warm_prompt_tok_s_median": 187.3,
+    "runs": [
+      {
+        "load_s": 28.65,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 48.5,
+        "gen_tokens": 149,
+        "gen_tok_s": 5.7,
+        "total_s": 55.51
+      },
+      {
+        "load_s": 0.0,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 187.3,
+        "gen_tokens": 147,
+        "gen_tok_s": 5.9,
+        "total_s": 25.2
+      },
+      {
+        "load_s": 0.0,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 173.6,
+        "gen_tokens": 153,
+        "gen_tok_s": 6.1,
+        "total_s": 25.13
+      },
+      {
+        "load_s": 0.0,
+        "prompt_tokens": 39,
+        "prompt_tok_s": 192.0,
+        "gen_tokens": 150,
+        "gen_tok_s": 6.8,
+        "total_s": 22.19
+      }
+    ]
+  },
+  "loaded_models": [
+    {
+      "name": "gemma4:e2b-it-q4_K_M",
+      "model": "gemma4:e2b-it-q4_K_M",
+      "size": 970803117,
+      "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "gemma4",
+        "families": [
+          "gemma4"
+        ],
+        "parameter_size": "4.6B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2319-01-20T08:16:32.916785569Z",
+      "size_vram": 0,
+      "context_length": 4096
+    }
+  ],
+  "memory_loaded": {},
+  "tools": {
+    "trials": 5,
+    "fully_ok": 5,
+    "median_seconds": 11.8,
+    "results": [
+      {
+        "seconds": 15.7,
+        "tools_called": [
+          "get_forecast",
+          "get_sunrise",
+          "get_leave_by",
+          "get_conditions"
+        ],
+        "nudges": 0,
+        "all_four_tools": true,
+        "words": 20,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "Tomorrow's forecast is MAYBE. Sunrise is at 06:09. Leave-by is 03:34. Summit temperature is 15\u00b0C with light wind. Carry water."
+      },
+      {
+        "seconds": 11.5,
+        "tools_called": [
+          "get_forecast",
+          "get_sunrise",
+          "get_leave_by",
+          "get_conditions"
+        ],
+        "nudges": 0,
+        "all_four_tools": true,
+        "words": 20,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "Tomorrow's forecast is MAYBE. Sunrise is at 06:09. Leave-by is 03:34. Summit temperature is 15\u00b0C with light wind. Carry water."
+      },
+      {
+        "seconds": 10.9,
+        "tools_called": [
+          "get_forecast",
+          "get_sunrise",
+          "get_leave_by",
+          "get_conditions"
+        ],
+        "nudges": 0,
+        "all_four_tools": true,
+        "words": 20,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "Tomorrow's forecast is MAYBE. Sunrise is at 06:09. Leave-by is 03:34. Summit temperature is 15\u00b0C with light wind. Carry water."
+      },
+      {
+        "seconds": 12.0,
+        "tools_called": [
+          "get_forecast",
+          "get_sunrise",
+          "get_leave_by",
+          "get_conditions"
+        ],
+        "nudges": 0,
+        "all_four_tools": true,
+        "words": 20,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "Tomorrow's forecast is MAYBE. Sunrise is at 06:09. Leave-by is 03:34. Summit temperature is 15\u00b0C with light wind. Carry water."
+      },
+      {
+        "seconds": 11.8,
+        "tools_called": [
+          "get_forecast",
+          "get_sunrise",
+          "get_leave_by",
+          "get_conditions"
+        ],
+        "nudges": 0,
+        "all_four_tools": true,
+        "words": 17,
+        "numbers_ok": true,
+        "unsupported_numbers": [],
+        "text": "Tomorrow's forecast is MAYBE. Sunrise is at 06:09. Leave-by is 03:34. Summit temperature is 15\u00b0C. Carry water."
+      }
+    ]
+  },
+  "photos": {
+    "photos": 14,
+    "valid_json": 14,
+    "agreement": "7/11",
+    "median_seconds": 29.75,
+    "results": [
+      {
+        "photo": "a-hill-from-over-the-clouds-nandi-hills.jpg",
+        "kb": 150,
+        "seconds": 34.3,
+        "valid_json": true,
+        "reference": "partial",
+        "gemma": "partial",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "There is a thick layer of fog or low clouds obscuring the lower parts of the landscape, with a forested hill visible above the fog.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": true,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 697,
+        "prompt_tok_s": 28.5,
+        "gen_tokens": 79,
+        "gen_tok_s": 8.2,
+        "total_s": 34.3
+      },
+      {
+        "photo": "above-the-clouds-at-nandi-hills.jpg",
+        "kb": 243,
+        "seconds": 28.3,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "A thick layer of fog or low clouds covers the landscape below the viewpoint.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 616,
+        "prompt_tok_s": 31.3,
+        "gen_tokens": 68,
+        "gen_tok_s": 8.0,
+        "total_s": 28.3
+      },
+      {
+        "photo": "early-sunrise-above-clouds-nandi-hills-bangalore.jpg",
+        "kb": 225,
+        "seconds": 25.5,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "There is a thick layer of clouds or fog spread out below the viewpoint.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 616,
+        "prompt_tok_s": 31.6,
+        "gen_tokens": 68,
+        "gen_tok_s": 11.4,
+        "total_s": 25.52
+      },
+      {
+        "photo": "fog-on-nandi-hills.jpg",
+        "kb": 219,
+        "seconds": 35.8,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "socked_in",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "The scene is heavily obscured by thick fog and mist, especially on the hillside.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.05,
+        "prompt_tokens": 751,
+        "prompt_tok_s": 27.0,
+        "gen_tokens": 70,
+        "gen_tok_s": 9.0,
+        "total_s": 35.77
+      },
+      {
+        "photo": "hill-above-the-clouds-at-nandi-hills.jpg",
+        "kb": 61,
+        "seconds": 35.1,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "socked_in",
+        "agrees": null,
+        "confidence": 0.95,
+        "evidence": "A thick layer of fog or low clouds obscures the view of the distant hills.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 751,
+        "prompt_tok_s": 27.9,
+        "gen_tokens": 70,
+        "gen_tok_s": 8.7,
+        "total_s": 35.1
+      },
+      {
+        "photo": "nandi-betta-hills.jpg",
+        "kb": 137,
+        "seconds": 28.3,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "socked_in",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "The scene is heavily obscured by thick fog, with trees and a wooden structure visible through the mist.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 616,
+        "prompt_tok_s": 30.9,
+        "gen_tokens": 74,
+        "gen_tok_s": 9.0,
+        "total_s": 28.29
+      },
+      {
+        "photo": "nandi-hills-bangalore-2017.jpg",
+        "kb": 246,
+        "seconds": 34.1,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "evidence": "The photo shows a vast landscape stretching out below the viewpoint, with distant plains and hills visible under a dramatic sky.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": true,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 751,
+        "prompt_tok_s": 28.7,
+        "gen_tokens": 75,
+        "gen_tok_s": 9.8,
+        "total_s": 34.08
+      },
+      {
+        "photo": "nandi-hills-foggy-view.jpg",
+        "kb": 89,
+        "seconds": 17.6,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "evidence": "The image shows a dense forest canopy shrouded in thick fog or mist.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 431,
+        "prompt_tok_s": 35.0,
+        "gen_tokens": 67,
+        "gen_tok_s": 12.9,
+        "total_s": 17.61
+      },
+      {
+        "photo": "nandi-hills-j-bangalore.jpg",
+        "kb": 377,
+        "seconds": 28.2,
+        "valid_json": true,
+        "reference": "socked_in",
+        "gemma": "socked_in",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "The scene is dominated by trees shrouded in mist or fog, suggesting a foggy morning view from a hilltop.",
+        "answers": {
+          "nearby_objects_hazy": true,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 616,
+        "prompt_tok_s": 31.0,
+        "gen_tokens": 75,
+        "gen_tok_s": 9.2,
+        "total_s": 28.2
+      },
+      {
+        "photo": "nandi-hills-sunrise.jpg",
+        "kb": 59,
+        "seconds": 31.2,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "cloud_sea",
+        "agrees": null,
+        "confidence": 0.95,
+        "evidence": "There is a thick layer of clouds below the viewer, illuminated by the rising sun.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 697,
+        "prompt_tok_s": 28.1,
+        "gen_tokens": 69,
+        "gen_tok_s": 11.0,
+        "total_s": 31.18
+      },
+      {
+        "photo": "sky-view-from-top-of-nandi-hills.jpg",
+        "kb": 122,
+        "seconds": 32.4,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "evidence": "The image shows a bright sun shining through clouds over a distant landscape.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": true,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 751,
+        "prompt_tok_s": 29.1,
+        "gen_tokens": 67,
+        "gen_tok_s": 10.3,
+        "total_s": 32.42
+      },
+      {
+        "photo": "sun-rising-over-a-blanket-of-clouds-nandi-hills-karnataka.jpg",
+        "kb": 147,
+        "seconds": 24.3,
+        "valid_json": true,
+        "reference": "cloud_sea",
+        "gemma": "cloud_sea",
+        "agrees": true,
+        "confidence": 0.95,
+        "evidence": "There is a vast layer of clouds spread out below the viewpoint, with the sun rising above them.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.01,
+        "prompt_tokens": 535,
+        "prompt_tok_s": 34.7,
+        "gen_tokens": 73,
+        "gen_tok_s": 8.3,
+        "total_s": 24.3
+      },
+      {
+        "photo": "sunrise-at-nandi-hills.jpg",
+        "kb": 75,
+        "seconds": 31.9,
+        "valid_json": true,
+        "reference": "clear_no_sea",
+        "gemma": "cloud_sea",
+        "agrees": false,
+        "confidence": 0.95,
+        "evidence": "There is a layer of haze or fog visible below the horizon, obscuring the view of the distant landscape.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 697,
+        "prompt_tok_s": 29.7,
+        "gen_tokens": 74,
+        "gen_tok_s": 9.0,
+        "total_s": 31.86
+      },
+      {
+        "photo": "sunrise-nandi-hils-4317595471.jpg",
+        "kb": 73,
+        "seconds": 24.6,
+        "valid_json": true,
+        "reference": "uncertain",
+        "gemma": "cloud_sea",
+        "agrees": null,
+        "confidence": 0.95,
+        "evidence": "A bright, reddish-orange sun is visible through a layer of clouds during sunrise.",
+        "answers": {
+          "nearby_objects_hazy": false,
+          "ground_visible_far_below": false,
+          "layer_below_horizon": true
+        },
+        "load_s": 0.0,
+        "prompt_tokens": 616,
+        "prompt_tok_s": 33.0,
+        "gen_tokens": 69,
+        "gen_tok_s": 11.7,
+        "total_s": 24.63
+      }
+    ]
+  },
+  "memory_after": {},
+  "render": {
+    "plan": "2c-8g",
+    "region": "singapore",
+    "peak_memory_gb": 6.45,
+    "first_deploy_started": "2026-10-10T08:25:50.656059+00:00"
+  }
+}

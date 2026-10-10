@@ -305,7 +305,7 @@ function PhotoStatus({
           </p>
         )}
 
-        {photo?.status === 'rated' && photo.confirmed_label && (
+        {photo?.confirmed_label && (
           <p>
             <span aria-hidden="true">✓ </span>
             Thanks. You confirmed <strong>{PHOTO_LABELS[photo.confirmed_label]}</strong>. It counts toward the grade
@@ -314,31 +314,45 @@ function PhotoStatus({
           </p>
         )}
 
-        {photo?.status === 'rated' && !photo.confirmed_label && photo.rating && (
-          <div className="rating">
-            <p>
-              Gemma's read: <strong>{PHOTO_LABELS[photo.rating.label]}</strong>
-            </p>
-            <blockquote className="evidence-quote">{photo.rating.evidence}</blockquote>
-            <p className="ask">Is that right?</p>
-            <button type="button" className="btn btn-primary" disabled={busy} onClick={() => confirm(photo.rating!.label)}>
-              Yes, that's right
-            </button>
-            <p className="muted small">Or choose what you saw:</p>
-            <div className="label-choices">
-              {PHOTO_LABEL_ORDER.filter((l) => l !== photo.rating!.label).map((l) => (
-                <button key={l} type="button" className="btn choice" disabled={busy} onClick={() => confirm(l)}>
-                  <span className="choice-name">{PHOTO_LABELS[l]}</span>
-                  <span className="choice-hint">{LABEL_HINTS[l]}</span>
-                </button>
-              ))}
+        {photo && !photo.confirmed_label && photo.status !== 'queued' && (() => {
+          const read = photo.rating && photo.rating.label !== 'unusable' ? photo.rating.label : null
+          return (
+            <div className="rating">
+              {read ? (
+                <>
+                  <p>
+                    Gemma's read: <strong>{PHOTO_LABELS[read]}</strong>
+                  </p>
+                  {photo.rating?.evidence && <blockquote className="evidence-quote">{photo.rating.evidence}</blockquote>}
+                  <p className="ask">Is that right?</p>
+                  <button type="button" className="btn btn-primary" disabled={busy} onClick={() => confirm(read)}>
+                    Yes, that's right
+                  </button>
+                  <p className="muted small">Or choose what you saw:</p>
+                </>
+              ) : (
+                <p className="ask">
+                  {photo.status === 'failed'
+                    ? "Gemma couldn't rate this photo."
+                    : "Gemma couldn't see the view from the summit in this photo."}{' '}
+                  What did you see?
+                </p>
+              )}
+              <div className="label-choices">
+                {PHOTO_LABEL_ORDER.filter((l) => l !== read).map((l) => (
+                  <button key={l} type="button" className="btn choice" disabled={busy} onClick={() => confirm(l)}>
+                    <span className="choice-name">{PHOTO_LABELS[l]}</span>
+                    <span className="choice-hint">{LABEL_HINTS[l]}</span>
+                  </button>
+                ))}
+              </div>
+              <label className="switch">
+                <input type="checkbox" role="switch" checked={isPublic} onChange={(e) => setPub(e.target.checked)} />
+                <span>Add to public gallery</span>
+              </label>
             </div>
-            <label className="switch">
-              <input type="checkbox" role="switch" checked={isPublic} onChange={(e) => setPub(e.target.checked)} />
-              <span>Add to public gallery</span>
-            </label>
-          </div>
-        )}
+          )
+        })()}
 
         {error && (
           <p className="error" role="alert">

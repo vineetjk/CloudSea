@@ -123,10 +123,14 @@ function BacktestView({ bt }: { bt: Backtest }) {
   return (
     <>
       <p className="backtest-headline">
-        In the {bt.season.replace('-', '–')} season, going every one of {h.weekends} weekends would have found a cloud
-        sea {h.every_weekend_seas} {h.every_weekend_seas === 1 ? 'time' : 'times'}. Going only when CloudSea said GO
-        would have meant {h.cloudsea_trips} {h.cloudsea_trips === 1 ? 'trip' : 'trips'} and {h.cloudsea_seas}{' '}
-        {h.cloudsea_seas === 1 ? 'cloud sea' : 'cloud seas'}.
+        In the {bt.season.replace('-', '–')} season, going on all {h.weekend_mornings} Saturday and Sunday mornings would
+        have found a cloud sea {h.every_weekend_seas} {h.every_weekend_seas === 1 ? 'time' : 'times'}. Going only when
+        CloudSea said GO would have meant {h.go_trips} {h.go_trips === 1 ? 'trip' : 'trips'} and {h.go_seas}{' '}
+        {h.go_seas === 1 ? 'cloud sea' : 'cloud seas'}.
+      </p>
+      <p className="small">
+        Going on GO or MAYBE: {h.go_or_maybe_trips} trips, {h.go_or_maybe_seas} cloud seas. Staying home on SKIP
+        missed {h.seas_missed_by_skip} {h.seas_missed_by_skip === 1 ? 'cloud sea' : 'cloud seas'}.
       </p>
       <p className="muted small">
         This is a backtest on a past season, run the way the live forecast runs. It is not a live result; the live

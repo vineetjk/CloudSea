@@ -65,22 +65,27 @@ export interface Scoreboard {
 
 export interface Backtest {
   season: string
-  headline: { weekends: number; every_weekend_seas: number; cloudsea_trips: number; cloudsea_seas: number }
+  headline: {
+    weekend_mornings: number; every_weekend_seas: number; go_trips: number; go_seas: number
+    go_or_maybe_trips: number; go_or_maybe_seas: number; seas_missed_by_skip: number
+  }
   metrics: Array<{ model: string; brier: number; roc_auc: number; go_precision: number | null }>
   calibration: Array<{ bin: string; predicted: number; observed: number; n: number }>
 }
 
+export type PhotoStatus = 'queued' | 'rated' | 'failed'
+
 export interface UploadResponse {
   id: string
   token: string
-  status: 'queued' | 'rated'
+  status: PhotoStatus
 }
 
 export interface Photo {
   id: string
   date: string
-  status: 'queued' | 'rated'
-  rating: { label: PhotoLabel; confidence: number; evidence: string } | null
+  status: PhotoStatus
+  rating: { label: PhotoLabel | 'unusable'; confidence: number; evidence: string } | null
   confirmed_label: PhotoLabel | null
   public: boolean
 }

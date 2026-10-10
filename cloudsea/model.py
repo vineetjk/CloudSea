@@ -261,6 +261,7 @@ def training_rows() -> pd.DataFrame:
     try:
         from cloudsea import db
         with db.connect() as conn:
+            db.init_schema(conn)
             rows = db.train_rows(conn)
         if rows:
             live = pd.DataFrame([{**r["features"], "y": r["y"]} for r in rows],

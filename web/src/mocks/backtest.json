@@ -1,6 +1,6 @@
 {
   "season": "2025-26",
-  "headline": { "weekends": 22, "every_weekend_seas": 5, "cloudsea_trips": 6, "cloudsea_seas": 4 },
+  "headline": { "weekend_mornings": 22, "every_weekend_seas": 5, "go_trips": 6, "go_seas": 4, "go_or_maybe_trips": 12, "go_or_maybe_seas": 5, "seas_missed_by_skip": 0 },
   "metrics": [
     { "model": "TabPFN", "brier": 0.11, "roc_auc": 0.84, "go_precision": 0.62 },
     { "model": "Logistic regression", "brier": 0.13, "roc_auc": 0.78, "go_precision": 0.5 },
