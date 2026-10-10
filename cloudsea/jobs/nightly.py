@@ -65,8 +65,8 @@ def make_call(day: date, train: pd.DataFrame | None = None) -> dict:
         leave_by=home["leave_by"], summit_temp_c=cond["summit_temp_c"], wind_kmh=cond["wind_kmh"],
         rain_chance_pct=cond["rain_chance_pct"], carry=carry)
     written = writer.write_call(facts)
-    text_kn = writer.translate(written["text"], verdict, "kn")
-    text_hi = writer.translate(written["text"], verdict, "hi")
+    text_kn, kn_tries = writer.translate(written["text"], verdict, "kn")
+    text_hi, hi_tries = writer.translate(written["text"], verdict, "hi")
 
     return {
         "date": target, "issued_at": datetime.now(IST), "verdict": verdict, "probability": round(float(p), 4),
@@ -76,7 +76,8 @@ def make_call(day: date, train: pd.DataFrame | None = None) -> dict:
         "leave_by": [{k: r[k] for k in ("area", "label", "drive_minutes", "buffer_minutes", "leave_by")}
                      for r in leave],
         "gate": plan.GATE,
-        "model": {**model_info, "writer": "Gemma 4 E2B (gemma4:e2b-it-q4_K_M)", "writer_attempts": len(written["attempts"])},
+        "model": {**model_info, "writer": "Gemma 4 E2B (gemma4:e2b-it-q4_K_M)", "writer_attempts": len(written["attempts"]),
+                  "translation_failures": {"kn": kn_tries, "hi": hi_tries}},
         "features": {k: _clean(v) for k, v in x.items()} | {"_notes": notes},
         "thresholds": th.__dict__,
     }

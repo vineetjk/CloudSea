@@ -6,6 +6,7 @@ set up from an agent session. It is idempotent: resources are found by name and 
 
     uv run python scripts/render_deploy.py db gemma        # slow pieces first
     uv run python scripts/render_deploy.py api nightly grader web
+    uv run python scripts/render_deploy.py deploy       # after a push: the public-URL repo has no webhook
     uv run python scripts/render_deploy.py status
 """
 from __future__ import annotations
@@ -135,6 +136,15 @@ def ensure_web(http, own: str, api_url: str) -> dict:
     return svc
 
 
+def deploy(http, names: list[str]) -> None:
+    """Deploy the latest commit. Needed because a repo added by public URL gets no push webhooks."""
+    for name in names:
+        s = find_service(http, name)
+        if s:
+            d = http.post(f"/services/{s['id']}/deploys", json={"clearCache": "do_not_clear"}).raise_for_status().json()
+            print(f"deploying {name}: {d['id']}")
+
+
 def status(http) -> None:
     for name in ["cloudsea-gemma", "cloudsea-api", "cloudsea-nightly", "cloudsea-grader", "cloudsea-web"]:
         s = find_service(http, name)
@@ -166,6 +176,10 @@ def main() -> None:
                 ensure_cron(http, own, "cloudsea-grader", "45 2 * * *", "cloudsea.jobs.grader", [])
             elif step == "web":
                 ensure_web(http, own, os.environ.get("API_URL", "https://cloudsea-api.onrender.com"))
+            elif step == "deploy":
+                deploy(http, ["cloudsea-api", "cloudsea-nightly", "cloudsea-grader", "cloudsea-web"])
+            elif step == "deploy-gemma":
+                deploy(http, ["cloudsea-gemma"])
             elif step == "status":
                 status(http)
             else:

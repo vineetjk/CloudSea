@@ -153,15 +153,19 @@ def write_call(facts: Facts) -> dict:
 
 
 # --- Kannada and Hindi ---------------------------------------------------------------------------------
-# Without a glossary, E2B rendered "cloud sea" in Kannada as "cloudy weather" and left English words in;
-# with these terms both read correctly. A translation is published only if it passes check_translation.
-GLOSSARY = {
-    "kn": ("Kannada", "cloud sea = ಮೋಡದ ಸಮುದ್ರ; Nandi Hills = ನಂದಿ ಬೆಟ್ಟ; sunrise = ಸೂರ್ಯೋದಯ; warm layer = ಬೆಚ್ಚಗಿನ ಬಟ್ಟೆ; "
-                      "light jacket = ಹಗುರ ಜಾಕೆಟ್; rain jacket = ಮಳೆ ಜಾಕೆಟ್; torch = ಟಾರ್ಚ್; "
-                      "if you go anyway = ನೀವು ಹೋಗುವುದಾದರೆ"),
-    "hi": ("Hindi", "cloud sea = बादलों का समंदर; sunrise = सूर्योदय; warm layer = गर्म कपड़े; light jacket = हल्की जैकेट; "
-                    "rain jacket = रेनकोट; torch = टॉर्च; if you go anyway = अगर आप फिर भी जाएं"),
+# What went wrong without help: E2B rendered "cloud sea" in Kannada as "cloudy weather", read "Sun" (Sunday) as
+# "evening", dropped the call word, and pasted glossary phrases that weren't in the English. So: the call word is
+# handled in code (stripped, then put back), only glossary terms that occur in the English are passed, and the
+# result must pass check_translation or nothing is shown.
+TERMS = {
+    "kn": {"cloud sea": "ಮೋಡದ ಸಮುದ್ರ", "Nandi Hills": "ನಂದಿ ಬೆಟ್ಟ", "Sunrise": "ಸೂರ್ಯೋದಯ", "warm layer": "ಬೆಚ್ಚಗಿನ ಬಟ್ಟೆ",
+           "light jacket": "ಹಗುರ ಜಾಕೆಟ್", "rain jacket": "ಮಳೆ ಜಾಕೆಟ್", "torch": "ಟಾರ್ಚ್", "If you go anyway": "ನೀವು ಹೋಗುವುದಾದರೆ",
+           "Mon": "ಸೋಮವಾರ", "Tue": "ಮಂಗಳವಾರ", "Wed": "ಬುಧವಾರ", "Thu": "ಗುರುವಾರ", "Fri": "ಶುಕ್ರವಾರ", "Sat": "ಶನಿವಾರ", "Sun": "ಭಾನುವಾರ"},
+    "hi": {"cloud sea": "बादलों का समंदर", "Sunrise": "सूर्योदय", "warm layer": "गर्म कपड़े", "light jacket": "हल्की जैकेट",
+           "rain jacket": "रेनकोट", "torch": "टॉर्च", "If you go anyway": "अगर आप फिर भी जाएं",
+           "Mon": "सोमवार", "Tue": "मंगलवार", "Wed": "बुधवार", "Thu": "गुरुवार", "Fri": "शुक्रवार", "Sat": "शनिवार", "Sun": "रविवार"},
 }
+LANG_NAMES = {"kn": "Kannada", "hi": "Hindi"}
 LATIN_WORD = re.compile(r"[A-Za-z]{2,}")
 
 
@@ -169,7 +173,7 @@ def check_translation(text: str, english: str, verdict: str) -> list[str]:
     problems = []
     if sorted(NUM_RE.findall(text)) != sorted(NUM_RE.findall(english)):
         problems.append("numbers differ from the English call")
-    if verdict not in text:
+    if not text.startswith(f"{verdict}:"):
         problems.append("verdict missing")
     stray = [w for w in LATIN_WORD.findall(text) if w != verdict]
     if stray:
@@ -179,18 +183,25 @@ def check_translation(text: str, english: str, verdict: str) -> list[str]:
     return problems
 
 
-def translate(english: str, verdict: str, lang: str) -> str | None:
-    """Gemma's translation of the published call, or None if it doesn't pass the check in two tries."""
-    name, terms = GLOSSARY[lang]
-    prompt = (f"Translate this sunrise forecast into {name}. Use these terms: {terms}. Keep the word {verdict} in English "
-              f"capitals. Keep every number and time exactly as written, in Western digits. Write natural, simple {name} "
-              f"with no other English words. Output only the translation.\n\n{english}")
+def translate(english: str, verdict: str, lang: str) -> tuple[str | None, list]:
+    """Gemma's translation of the published call, or None if it doesn't pass the check in two tries.
+    Also returns what went wrong with each try, which the nightly job records."""
+    body = english.removeprefix(f"{verdict}:").strip()
+    terms = "; ".join(f"{en} = {tr}" for en, tr in TERMS[lang].items() if re.search(rf"\b{re.escape(en)}\b", body))
+    name = LANG_NAMES[lang]
+    prompt = (f"Translate into {name}. Use these terms: {terms}. Keep every number and time exactly as written, in "
+              f"Western digits. Translate only what is there; add nothing. Write natural, simple {name} with no "
+              f"English words. Output only the translation.\n\n{body}")
+    tries: list = []
     for i in range(2):
         try:
             out = gemma.chat([{"role": "user", "content": prompt}], options={"temperature": 0.2 + 0.2 * i})
-        except Exception:  # noqa: BLE001
-            return None
-        text = " ".join(out["message"]["content"].split())
-        if not check_translation(text, english, verdict):
-            return text
-    return None
+        except Exception as err:  # noqa: BLE001
+            tries.append(f"error: {err!r}"[:200])
+            continue
+        text = f"{verdict}: " + " ".join(out["message"]["content"].split())
+        problems = check_translation(text, english, verdict)
+        if not problems:
+            return text, tries
+        tries.append({"problems": problems, "text": text[:300]})
+    return None, tries
