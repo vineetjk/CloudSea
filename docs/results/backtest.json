@@ -1,0 +1,357 @@
+{
+  "label": "B_low_layer_summit_clear",
+  "test_season": "2025-26",
+  "train_rows": 1639,
+  "test_rows": 151,
+  "test_base_rate": 0.351,
+  "models": {
+    "tabpfn_obs": {
+      "thresholds": {
+        "skip_below": 0.15,
+        "go_at": 0.56
+      },
+      "oof": {
+        "n": 452,
+        "brier": 0.2153,
+        "roc_auc": 0.679,
+        "go_nights": 96,
+        "go_precision": 0.604
+      },
+      "test": {
+        "n": 151,
+        "brier": 0.1771,
+        "roc_auc": 0.803,
+        "go_nights": 35,
+        "go_precision": 0.686
+      },
+      "calibration": [
+        {
+          "bin": "0.1-0.2",
+          "predicted": 0.167,
+          "observed": 0.062,
+          "n": 16
+        },
+        {
+          "bin": "0.2-0.3",
+          "predicted": 0.251,
+          "observed": 0.118,
+          "n": 34
+        },
+        {
+          "bin": "0.3-0.4",
+          "predicted": 0.347,
+          "observed": 0.188,
+          "n": 32
+        },
+        {
+          "bin": "0.4-0.5",
+          "predicted": 0.449,
+          "observed": 0.478,
+          "n": 23
+        },
+        {
+          "bin": "0.5-0.6",
+          "predicted": 0.552,
+          "observed": 0.526,
+          "n": 19
+        },
+        {
+          "bin": "0.6-0.7",
+          "predicted": 0.651,
+          "observed": 0.812,
+          "n": 16
+        },
+        {
+          "bin": "0.7-0.8",
+          "predicted": 0.746,
+          "observed": 0.625,
+          "n": 8
+        },
+        {
+          "bin": "0.8-0.9",
+          "predicted": 0.811,
+          "observed": 1.0,
+          "n": 3
+        }
+      ]
+    },
+    "tabpfn_full": {
+      "thresholds": {
+        "skip_below": 0.15,
+        "go_at": 0.6
+      },
+      "oof": {
+        "n": 452,
+        "brier": 0.2339,
+        "roc_auc": 0.628,
+        "go_nights": 40,
+        "go_precision": 0.625
+      },
+      "test": {
+        "n": 151,
+        "brier": 0.147,
+        "roc_auc": 0.866,
+        "go_nights": 34,
+        "go_precision": 0.765
+      },
+      "calibration": [
+        {
+          "bin": "0.0-0.1",
+          "predicted": 0.067,
+          "observed": 0.0,
+          "n": 5
+        },
+        {
+          "bin": "0.1-0.2",
+          "predicted": 0.155,
+          "observed": 0.034,
+          "n": 29
+        },
+        {
+          "bin": "0.2-0.3",
+          "predicted": 0.248,
+          "observed": 0.069,
+          "n": 29
+        },
+        {
+          "bin": "0.3-0.4",
+          "predicted": 0.35,
+          "observed": 0.286,
+          "n": 21
+        },
+        {
+          "bin": "0.4-0.5",
+          "predicted": 0.461,
+          "observed": 0.529,
+          "n": 17
+        },
+        {
+          "bin": "0.5-0.6",
+          "predicted": 0.553,
+          "observed": 0.562,
+          "n": 16
+        },
+        {
+          "bin": "0.6-0.7",
+          "predicted": 0.634,
+          "observed": 0.545,
+          "n": 11
+        },
+        {
+          "bin": "0.7-0.8",
+          "predicted": 0.756,
+          "observed": 0.667,
+          "n": 9
+        },
+        {
+          "bin": "0.8-0.9",
+          "predicted": 0.854,
+          "observed": 1.0,
+          "n": 11
+        },
+        {
+          "bin": "0.9-1.0",
+          "predicted": 0.922,
+          "observed": 1.0,
+          "n": 3
+        }
+      ]
+    },
+    "gbt_obs": {
+      "thresholds": {
+        "skip_below": 0.05,
+        "go_at": 0.69
+      },
+      "oof": {
+        "n": 452,
+        "brier": 0.2502,
+        "roc_auc": 0.645,
+        "go_nights": 85,
+        "go_precision": 0.6
+      },
+      "test": {
+        "n": 151,
+        "brier": 0.2008,
+        "roc_auc": 0.724,
+        "go_nights": 23,
+        "go_precision": 0.696
+      },
+      "calibration": [
+        {
+          "bin": "0.0-0.1",
+          "predicted": 0.06,
+          "observed": 0.188,
+          "n": 16
+        },
+        {
+          "bin": "0.1-0.2",
+          "predicted": 0.151,
+          "observed": 0.147,
+          "n": 34
+        },
+        {
+          "bin": "0.2-0.3",
+          "predicted": 0.254,
+          "observed": 0.211,
+          "n": 19
+        },
+        {
+          "bin": "0.3-0.4",
+          "predicted": 0.346,
+          "observed": 0.36,
+          "n": 25
+        },
+        {
+          "bin": "0.4-0.5",
+          "predicted": 0.453,
+          "observed": 0.4,
+          "n": 15
+        },
+        {
+          "bin": "0.5-0.6",
+          "predicted": 0.552,
+          "observed": 0.571,
+          "n": 7
+        },
+        {
+          "bin": "0.6-0.7",
+          "predicted": 0.647,
+          "observed": 0.538,
+          "n": 13
+        },
+        {
+          "bin": "0.7-0.8",
+          "predicted": 0.746,
+          "observed": 0.8,
+          "n": 10
+        },
+        {
+          "bin": "0.8-0.9",
+          "predicted": 0.841,
+          "observed": 0.636,
+          "n": 11
+        },
+        {
+          "bin": "0.9-1.0",
+          "predicted": 0.944,
+          "observed": 0.0,
+          "n": 1
+        }
+      ]
+    },
+    "gbt_full": {
+      "thresholds": {
+        "skip_below": 0.05,
+        "go_at": 0.77
+      },
+      "oof": {
+        "n": 452,
+        "brier": 0.2853,
+        "roc_auc": 0.596,
+        "go_nights": 31,
+        "go_precision": 0.613
+      },
+      "test": {
+        "n": 151,
+        "brier": 0.144,
+        "roc_auc": 0.869,
+        "go_nights": 38,
+        "go_precision": 0.763
+      },
+      "calibration": [
+        {
+          "bin": "0.0-0.1",
+          "predicted": 0.049,
+          "observed": 0.043,
+          "n": 46
+        },
+        {
+          "bin": "0.1-0.2",
+          "predicted": 0.134,
+          "observed": 0.214,
+          "n": 14
+        },
+        {
+          "bin": "0.2-0.3",
+          "predicted": 0.239,
+          "observed": 0.154,
+          "n": 13
+        },
+        {
+          "bin": "0.3-0.4",
+          "predicted": 0.342,
+          "observed": 0.1,
+          "n": 10
+        },
+        {
+          "bin": "0.4-0.5",
+          "predicted": 0.443,
+          "observed": 0.25,
+          "n": 4
+        },
+        {
+          "bin": "0.5-0.6",
+          "predicted": 0.558,
+          "observed": 0.556,
+          "n": 9
+        },
+        {
+          "bin": "0.6-0.7",
+          "predicted": 0.659,
+          "observed": 0.556,
+          "n": 9
+        },
+        {
+          "bin": "0.7-0.8",
+          "predicted": 0.758,
+          "observed": 0.583,
+          "n": 12
+        },
+        {
+          "bin": "0.8-0.9",
+          "predicted": 0.857,
+          "observed": 0.625,
+          "n": 16
+        },
+        {
+          "bin": "0.9-1.0",
+          "predicted": 0.952,
+          "observed": 0.944,
+          "n": 18
+        }
+      ]
+    }
+  },
+  "baselines": {
+    "climatology": {
+      "n": 151,
+      "brier": 0.2043,
+      "roc_auc": 0.704
+    },
+    "persistence": {
+      "n": 151,
+      "brier": 0.2234,
+      "roc_auc": 0.639
+    },
+    "hand_rule": {
+      "n": 151,
+      "brier": 0.2499,
+      "roc_auc": 0.526
+    },
+    "ecmwf_raw_low_cloud": {
+      "n": 151,
+      "brier": 0.3984,
+      "roc_auc": 0.545
+    }
+  },
+  "headline": {
+    "model": "tabpfn_full",
+    "weekend_mornings": 43,
+    "every_weekend_seas": 17,
+    "go_trips": 12,
+    "go_seas": 10,
+    "go_or_maybe_trips": 36,
+    "go_or_maybe_seas": 16,
+    "seas_missed_by_skip": 1
+  }
+}

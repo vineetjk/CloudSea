@@ -49,14 +49,22 @@ def load_table() -> pd.DataFrame:
 
 # --- models -------------------------------------------------------------------------------------------
 
+def _drop_empty(X_train: pd.DataFrame, X_test: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Drop columns with no values in the training rows (e.g. ECMWF features in folds before 2024)."""
+    keep = X_train.columns[X_train.notna().any()]
+    return X_train[keep], X_test[keep]
+
+
 def tabpfn_fit_predict(X_train: pd.DataFrame, y_train: pd.Series, X_test: pd.DataFrame) -> np.ndarray:
     from tabpfn_client import TabPFNClassifier
+    X_train, X_test = _drop_empty(X_train, X_test)
     clf = TabPFNClassifier()
     clf.fit(X_train, y_train.astype(int))
     return clf.predict_proba(X_test)[:, 1]
 
 
 def gbt_fit_predict(X_train: pd.DataFrame, y_train: pd.Series, X_test: pd.DataFrame) -> np.ndarray:
+    X_train, X_test = _drop_empty(X_train, X_test)
     clf = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, max_leaf_nodes=15,
                                          l2_regularization=1.0, random_state=0)
     clf.fit(X_train, y_train.astype(int))
@@ -81,7 +89,8 @@ def baselines(train: pd.DataFrame, test: pd.DataFrame) -> dict[str, np.ndarray]:
     out["persistence"] = test["today_sea_airport"].fillna(-1).map(pers).fillna(train["y"].mean()).to_numpy()
 
     def rule(df: pd.DataFrame) -> pd.Series:
-        return ((df["eve_spread_c"] <= 2.0) & (df["eve_wind_kmh"] <= 8)
+        # Thresholds picked on training rows only: the textbook 2 °C / 8 km/h version never fires at 19:30 IST.
+        return ((df["eve_spread_c"] <= 5.0) & (df["eve_wind_kmh"] <= 12)
                 & ~(df["eve_ceiling_kft"] < 5) & (df["rain_reports_24h"] == 0))
     hit_rate = train.groupby(rule(train))["y"].mean()
     out["hand_rule"] = rule(test).map(hit_rate).fillna(train["y"].mean()).to_numpy()
@@ -94,6 +103,7 @@ def baselines(train: pd.DataFrame, test: pd.DataFrame) -> dict[str, np.ndarray]:
 # --- metrics and thresholds ---------------------------------------------------------------------------
 
 def metrics(y: np.ndarray, p: np.ndarray, t_go: float | None = None) -> dict:
+    y, p = np.asarray(y, dtype=float), np.asarray(p, dtype=float)
     ok = ~np.isnan(p)
     y, p = y[ok], p[ok]
     if len(y) == 0:
@@ -108,6 +118,7 @@ def metrics(y: np.ndarray, p: np.ndarray, t_go: float | None = None) -> dict:
 
 
 def calibration(y: np.ndarray, p: np.ndarray, bins: int = 10) -> list[dict]:
+    y, p = np.asarray(y, dtype=float), np.asarray(p, dtype=float)
     edges = np.linspace(0, 1, bins + 1)
     out = []
     for lo, hi in zip(edges[:-1], edges[1:], strict=True):
@@ -140,16 +151,28 @@ def verdict(p: float, th: Thresholds) -> str:
 
 # --- backtest -----------------------------------------------------------------------------------------
 
+def cached_fit_predict(model: str, fold: str, train: pd.DataFrame, test: pd.DataFrame) -> np.ndarray:
+    """Predictions cached on disk per (model, fold, rows); TabPFN calls cost API credits."""
+    fit_predict, cols = MODELS[model]
+    key = f"{model}_{fold}_{len(train)}_{len(test)}_{test.index.min():%Y%m%d}"
+    path = DATA_DIR / "interim" / "pred_cache" / f"{key}.npy"
+    if path.exists():
+        return np.load(path)
+    p = fit_predict(train[cols], train["y"], test[cols])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    np.save(path, p)
+    return p
+
+
 def out_of_fold(table: pd.DataFrame, model: str, seasons: list[str]) -> pd.Series:
     """Predict each in-season row of `seasons` with a model trained only on rows before that season."""
-    fit_predict, cols = MODELS[model]
     preds = []
     for s in seasons:
         test = table[(table["season"] == s) & table["in_season"]]
         train = table[table["target_date"] < test["target_date"].min()]
         if len(test) == 0 or train["y"].nunique() < 2:
             continue
-        preds.append(pd.Series(fit_predict(train[cols], train["y"], test[cols]), index=test.index))
+        preds.append(pd.Series(cached_fit_predict(model, s, train, test), index=test.index))
     return pd.concat(preds) if preds else pd.Series(dtype=float)
 
 
@@ -169,8 +192,7 @@ def backtest(models: list[str]) -> dict:
     for name in models:
         oof = out_of_fold(table, name, cv_seasons)
         th = choose_thresholds(table.loc[oof.index, "y"].to_numpy(), oof.to_numpy())
-        fit_predict, cols = MODELS[name]
-        p = fit_predict(train[cols], train["y"], test[cols])
+        p = cached_fit_predict(name, "test", train, test)
         preds[name] = p
         result["models"][name] = {
             "thresholds": th.__dict__, "oof": metrics(table.loc[oof.index, "y"].to_numpy(), oof.to_numpy(), th.go_at),

@@ -32,7 +32,7 @@ Tonight's call, or the most recent one.
   },
   "last_graded": {
     "date": "2026-10-10", "verdict": "MAYBE", "probability": 0.41,
-    "airport_outcome": "no_sea", "photo_outcome": null, "correct": true
+    "airport_outcome": "no_sea", "photo_outcome": null, "correct": false
   }
 }
 ```

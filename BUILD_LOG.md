@@ -148,3 +148,38 @@ The user asked me to run all phases without stopping, so I chose the label mysel
   - Small sample, one labeller, camera clocks trusted. A sanity check, not proof.
 - **Bug caught by the example days:** IEM stores visibility in statute miles, so "1500 m" comes back as 1497 m and passed "< 1500 m". Thresholds now have margins (`VIS_LOW_M = 1450`, `VIS_FOG_M = 950`), with a test that runs real reported values through the mile rounding. This lowered base rates by 2–9 points.
 - `make label-report` regenerates everything; `tests/test_label.py` has 11 tests.
+
+## 2026-10-10 14:18 — Phase 2: forecast model and backtest
+
+- **Features (`cloudsea/features.py`)**, only what exists when the call goes out:
+  - Airport reports up to **19:30 IST**. IEM ran 20–40 min behind real time today, so a 20:30 job can't count on the 20:00 report.
+  - The **00 UTC ECMWF IFS run of the same day** (out by ~13:30 IST), for the night and the next dawn (+24..+26 h).
+  - Rain reports in the last 24 h and 72 h, day of year, and the airport part of this morning's outcome.
+- **Leakage check (`tests/test_leakage.py`)** scrambles every report after the cut-off, and the next dawn's summary, then asserts the features don't move. It caught a real bug: after I moved the cut-off from 20:00 to 19:30, the 24 h rain window still ended at 20:00. The window is now derived from the cut-off.
+- **ECMWF backfill:** 937 of 941 daily runs (2024-03-14 to 2026-10-10) from the Single Runs API. The API sometimes takes 90 s per request; a 120 s timeout with 4 workers stalled, and 30 s with 8 workers finished.
+- **Split:**
+  - Train: target dates 2021-04-01 to 2025-09-30 (1639 rows, all months).
+  - Test: the 2025-26 fog season (Oct–Feb, 151 nights, base rate 35%), untouched until the final scores.
+  - Thresholds come from out-of-fold predictions on 2022-23, 2023-24 and 2024-25, each predicted by a model trained only on earlier rows.
+- **Test season (`docs/results/backtest.json`):**
+
+| | Brier | ROC-AUC | GO nights | GO precision |
+|---|---|---|---|---|
+| TabPFN, airport + ECMWF (live model) | 0.147 | 0.866 | 34 | 0.76 |
+| Gradient-boosted tree, airport + ECMWF | 0.144 | 0.869 | 38 | 0.76 |
+| TabPFN, airport only | 0.177 | 0.803 | 35 | 0.69 |
+| Gradient-boosted tree, airport only | 0.201 | 0.724 | 23 | 0.70 |
+| Monthly climatology | 0.204 | 0.704 | | |
+| Persistence (like this morning) | 0.223 | 0.639 | | |
+| Hand rule (spread ≤ 5 °C, wind ≤ 12 km/h, clear evening, no rain) | 0.250 | 0.526 | | |
+| ECMWF raw dawn low-cloud fraction as probability | 0.398 | 0.545 | | |
+
+- **Honest reading:**
+  - With ECMWF features, TabPFN and the tree are **tied**. TabPFN's edge shows where data is thin. Out of fold it has the better Brier in every season (0.208 vs 0.260, 0.241 vs 0.273, 0.197 vs 0.218), with the biggest gap in 2022-23, trained on only 547 rows.
+  - The earlier seasons are harder than the test season. Out-of-fold AUC was 0.72 (2022-23), 0.55 (2023-24) and 0.77 (2024-25), against 0.87 on 2025-26. Expect live skill somewhere in that range, not at the top of it. Per-season numbers: `docs/results/oof_by_season.csv`.
+  - The textbook radiation-fog rule (spread ≤ 2 °C, wind ≤ 8 km/h) fired on 0% of training nights at 19:30 IST; Bangalore evenings are breezy and fog forms later. The loosened version was chosen on training rows only.
+  - Raw ECMWF low cloud is a poor probability on its own (Brier 0.398, worse than climatology). TabPFN turns it into a calibrated call.
+- **Thresholds (TabPFN, airport + ECMWF, from out-of-fold):** SKIP below 15%, GO at 60% or above, MAYBE in between. Targets: GO precision ≥ 60% and seas among SKIP nights ≤ 10%. I chose them myself because the user asked for all phases without stopping; they're one place in `backtest.json`.
+- **Backtest headline (2025-26, weekend mornings only):** going every weekend = **43 trips, 17 cloud seas**; going only on GO = **12 trips, 10 cloud seas**; GO or MAYBE = 36 trips, 16 seas; SKIP missed 1 sea. Cloud sea here means the airport-based label, not a summit photo.
+- **Cost:** each TabPFN prediction is billed at a 10,000-credit minimum. Predictions are now cached on disk (`data/interim/pred_cache`), so re-running the report costs nothing.
+- **Live training data:** `make train-table` froze 2013 labelled rows (through 2026-10-08) into `data/model/train_table.parquet` (94 KB, committed). The grader appends each live day.

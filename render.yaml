@@ -1,0 +1,129 @@
+# CloudSea on Render: the whole app from one Blueprint. Everything that has a region runs in Singapore,
+# the closest Render region to Bangalore. Services reach each other over Render's private network.
+#
+# Monthly cost at these plans (Render pricing, October 2026):
+#   cloudsea-gemma   2c-8g private service  $135  + 10 GB disk $2.50
+#   cloudsea-api     0.5c-512mb web service $7
+#   cloudsea-db      0.1c-256mb Postgres    $6   + 1 GB storage $0.30
+#   cloudsea-nightly / cloudsea-grader      billed per minute of run time ($0.00058/min), $1/month minimum each
+#   cloudsea-web     static site            free
+# About $152/month in total; billing is per second, so a weekend of testing costs a few dollars.
+# Phase 0 benchmark: 2c-8g ran Gemma 4 E2B at 6.1 tok/s vs 6.4 tok/s on 4c-8g ($175), so 2c-8g it is.
+
+previews:
+  generation: "off"
+
+services:
+  - type: web
+    name: cloudsea-web
+    runtime: static
+    buildCommand: cd web && npm ci && npm run build
+    staticPublishPath: ./web/dist
+    buildFilter:
+      paths: ["web/**"]
+    envVars:
+      - key: VITE_API_BASE
+        value: https://cloudsea-api.onrender.com
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: web
+    name: cloudsea-api
+    runtime: python
+    region: singapore
+    plan: 0.5c-512mb
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run --no-sync uvicorn cloudsea.api.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips "*"
+    healthCheckPath: /healthz
+    envVars:
+      - fromGroup: cloudsea-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cloudsea-db
+          property: connectionString
+      - key: OLLAMA_HOSTPORT
+        fromService:
+          name: cloudsea-gemma
+          type: pserv
+          property: hostport
+      - key: WEB_ORIGIN
+        value: https://cloudsea-web.onrender.com
+      - key: WEB_BASE_URL
+        value: https://cloudsea-web.onrender.com
+      - key: IP_SALT
+        generateValue: true
+
+  - type: pserv
+    name: cloudsea-gemma
+    runtime: docker
+    region: singapore
+    plan: 2c-8g
+    dockerfilePath: ./infra/gemma/Dockerfile
+    dockerContext: ./infra/gemma
+    buildFilter:
+      paths: ["infra/gemma/**"]
+    disk:
+      name: ollama-models
+      mountPath: /var/data
+      sizeGB: 10
+
+  - type: cron
+    name: cloudsea-nightly
+    runtime: python
+    region: singapore
+    plan: 1c-2g
+    schedule: "0 15 * * *"      # 15:00 UTC = 20:30 IST
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run --no-sync python -m cloudsea.jobs.nightly
+    envVars:
+      - fromGroup: cloudsea-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cloudsea-db
+          property: connectionString
+      - key: OLLAMA_HOSTPORT
+        fromService:
+          name: cloudsea-gemma
+          type: pserv
+          property: hostport
+      - key: TABPFN_TOKEN
+        sync: false
+
+  - type: cron
+    name: cloudsea-grader
+    runtime: python
+    region: singapore
+    plan: 1c-2g
+    schedule: "45 2 * * *"      # 02:45 UTC = 08:15 IST
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run --no-sync python -m cloudsea.jobs.grader
+    envVars:
+      - fromGroup: cloudsea-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cloudsea-db
+          property: connectionString
+
+envVarGroups:
+  - name: cloudsea-shared
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.11"
+      - key: GEMMA_MODEL
+        value: gemma4:e2b-it-q4_K_M
+
+databases:
+  - name: cloudsea-db
+    region: singapore
+    plan: 0.1c-256mb
+    diskSizeGB: 1
+    postgresMajorVersion: "17"
