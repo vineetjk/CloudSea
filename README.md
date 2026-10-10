@@ -1,3 +1,5 @@
+<img width="2000" height="840" alt="cover" src="https://github.com/user-attachments/assets/499edd88-c4b4-4165-b6a9-d030e4802adf" />
+
 # CloudSea
 
 **Tomorrow's sunrise call for Nandi Hills: GO, MAYBE or SKIP, published at 8:30 PM, graded in public every morning.**
