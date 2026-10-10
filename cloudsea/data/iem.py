@@ -16,7 +16,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 URL = "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py"
@@ -25,12 +25,16 @@ USER_AGENT = "CloudSea/0.1 (https://github.com/vineetjk/CloudSea) python-urllib"
 
 
 def year_url(station: str, network: str, year: int) -> str:
+    return range_url(station, network, f"{year}-01-01T00:00Z", f"{year + 1}-01-01T00:00Z")
+
+
+def range_url(station: str, network: str, sts: str, ets: str) -> str:
     params = [
         ("station", station),
         ("network", network),
         ("data", "all"),
-        ("sts", f"{year}-01-01T00:00Z"),
-        ("ets", f"{year + 1}-01-01T00:00Z"),
+        ("sts", sts),
+        ("ets", ets),
         ("tz", "Etc/UTC"),
         ("format", "onlycomma"),
         ("latlon", "yes"),
@@ -64,6 +68,12 @@ def fetch(url: str, attempts: int = 5) -> bytes:
         print(f"  {reason}, retrying in {wait}s", file=sys.stderr, flush=True)
         time.sleep(wait)
     raise RuntimeError("unreachable")
+
+
+def fetch_range(start_utc: datetime, end_utc: datetime, station: str = "VOBL", network: str = "IN__ASOS") -> bytes:
+    """Reports between two UTC datetimes, for the nightly and grader jobs (IEM lags real time by ~20 min)."""
+    fmt = "%Y-%m-%dT%H:%MZ"
+    return fetch(range_url(station, network, start_utc.strftime(fmt), end_utc.strftime(fmt)))
 
 
 def download(out_dir: Path, station: str, network: str, first: int, last: int,

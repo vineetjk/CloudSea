@@ -16,13 +16,26 @@ VIS_LOW_M = 1450  # "below 1500 m": reported 1400 m or less
 VIS_FOG_M = 950   # "below 1000 m": reported 900 m or less (fog by definition)
 
 
+COLS = ["valid", "tmpf", "dwpf", "relh", "drct", "sknt", "vsby", "wxcodes", "metar"] + \
+       [f"skyc{i}" for i in LAYERS] + [f"skyl{i}" for i in LAYERS]
+
+
 def load(raw_dir: Path) -> pd.DataFrame:
-    """One row per report with UTC and IST times and metric units."""
-    cols = ["valid", "tmpf", "dwpf", "relh", "drct", "sknt", "vsby", "wxcodes", "metar"] + \
-           [f"skyc{i}" for i in LAYERS] + [f"skyl{i}" for i in LAYERS]
-    frames = [pd.read_csv(p, usecols=cols, dtype={"wxcodes": str, "metar": str}, low_memory=False)
+    """The whole archive: one row per report with UTC and IST times and metric units."""
+    frames = [pd.read_csv(p, usecols=COLS, dtype={"wxcodes": str, "metar": str}, low_memory=False)
               for p in sorted(raw_dir.glob("*.csv"))]
-    df = pd.concat(frames, ignore_index=True)
+    return parse(pd.concat(frames, ignore_index=True))
+
+
+def from_csv_bytes(body: bytes) -> pd.DataFrame:
+    """Reports fetched live by `iem.fetch_range`."""
+    import io
+    raw = pd.read_csv(io.BytesIO(body), usecols=COLS, dtype={"wxcodes": str, "metar": str}, na_values=[""])
+    return parse(raw)
+
+
+def parse(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
     df["utc"] = pd.to_datetime(df["valid"], utc=True)
     df["ist"] = df["utc"].dt.tz_convert("Asia/Kolkata")
     df["date"] = df["ist"].dt.date

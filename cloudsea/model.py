@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -212,3 +213,56 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# --- live use (nightly job) ---------------------------------------------------------------------------
+
+LIVE_MODEL = "tabpfn_full"   # chosen from the backtest; see docs/results/backtest.md
+TRAIN_SNAPSHOT = ROOT / "data" / "model" / "train_table.parquet"
+
+
+def save_train_table() -> Path:
+    """Freeze every labelled row (features + y) into a small committed file the cron jobs can read."""
+    t = load_table()
+    cols = features.OBS_FEATURES + features.NWP_FEATURES
+    snap = t[cols + ["y"]].copy()
+    snap.index.name = "date"
+    TRAIN_SNAPSHOT.parent.mkdir(parents=True, exist_ok=True)
+    snap.to_parquet(TRAIN_SNAPSHOT)
+    print(f"saved {len(snap)} rows through {snap.index.max():%Y-%m-%d} to {TRAIN_SNAPSHOT}")
+    return TRAIN_SNAPSHOT
+
+
+def training_rows() -> pd.DataFrame:
+    """The committed snapshot plus rows the grader has added since (live days)."""
+    snap = pd.read_parquet(TRAIN_SNAPSHOT)
+    try:
+        from cloudsea import db
+        with db.connect() as conn:
+            rows = db.train_rows(conn)
+        if rows:
+            live = pd.DataFrame([{**r["features"], "y": r["y"]} for r in rows],
+                                index=pd.to_datetime([r["date"] for r in rows]))
+            snap = pd.concat([snap[~snap.index.isin(live.index)], live])
+    except Exception as err:  # noqa: BLE001  - no database locally is fine
+        print(f"training rows: snapshot only ({type(err).__name__})")
+    return snap.sort_index()
+
+
+def predict_live(train: pd.DataFrame, x: pd.Series) -> tuple[float, dict]:
+    _, cols = MODELS[LIVE_MODEL]
+    train = train[train["y"].notna()]
+    X = pd.DataFrame([x.reindex(cols).astype(float)])
+    info = {"forecaster": "TabPFN (Prior Labs API)", "features": LIVE_MODEL, "train_rows": len(train),
+            "trained_through": f"{train.index.max():%Y-%m-%d}"}
+    try:
+        p = float(tabpfn_fit_predict(train[cols], train["y"], X)[0])
+    except Exception as err:  # noqa: BLE001  - keep the call going if the API is down
+        p = float(gbt_fit_predict(train[cols], train["y"], X)[0])
+        info["forecaster"] = f"gradient-boosted tree fallback (TabPFN failed: {type(err).__name__})"
+    return p, info
+
+
+def live_thresholds() -> Thresholds:
+    result = json.loads((RESULTS / "backtest.json").read_text())
+    return Thresholds(**result["models"][LIVE_MODEL]["thresholds"])

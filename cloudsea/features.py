@@ -1,7 +1,7 @@
 """Features for the call made on evening D about sunrise on D+1, using only what exists by 20:30 IST on D.
 
 Sources and cut-offs:
-* Airport reports (METAR) up to 20:00 IST on D. The 20:30 report may not have arrived when the job runs.
+* Airport reports (METAR) up to 19:30 IST on D. IEM runs 20-40 min behind, so later ones may be missing.
 * The 00 UTC ECMWF IFS run of day D (published by ~08 UTC = 13:30 IST): its values for the night and for
   D+1 dawn (+24..+26 h).
 * The outcome of D's own dawn (known by 07:30 on D), airport part only.
@@ -15,7 +15,7 @@ from datetime import time
 import numpy as np
 import pandas as pd
 
-OBS_CUTOFF = time(20, 0)        # last airport report used, IST
+OBS_CUTOFF = time(19, 30)       # last airport report used, IST (IEM runs 20-40 min behind real time)
 EVENING_START = time(17, 30)
 AFTERNOON = (time(11, 30), time(17, 30))
 
@@ -34,8 +34,9 @@ NWP_FEATURES = [
 
 
 def _call_day_of_report(ist: pd.Series) -> pd.Series:
-    """The call day whose 24 h window (previous 20:00, this 20:00] contains each report."""
-    shifted = ist + pd.Timedelta(hours=4) - pd.Timedelta(seconds=1)
+    """The call day whose 24 h window (previous cut-off, this cut-off] contains each report."""
+    to_midnight = pd.Timedelta(hours=24) - pd.Timedelta(hours=OBS_CUTOFF.hour, minutes=OBS_CUTOFF.minute)
+    shifted = ist + to_midnight - pd.Timedelta(seconds=1)
     return pd.to_datetime(shifted.dt.date)
 
 

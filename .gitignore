@@ -25,3 +25,6 @@ build/
 # OS / editors
 .DS_Store
 .vscode/
+
+# Agent worktrees
+.claude/worktrees/

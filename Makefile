@@ -2,7 +2,7 @@
 SHELL := /bin/sh
 PY := uv run python
 
-.PHONY: help setup hooks data data-metar data-openmeteo report-metar label-report gemma-pull bench-gemma bench-render tabpfn-smoke test lint
+.PHONY: backtest train-table nightly grade help setup hooks data data-metar data-openmeteo report-metar label-report gemma-pull bench-gemma bench-render tabpfn-smoke test lint
 
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-16s %s\n", $$1, $$2}'
@@ -23,6 +23,18 @@ data-openmeteo:  ## Summit-column humidity (labels, 2021+) and daily 00 UTC ECMW
 	$(PY) -m cloudsea.data.openmeteo both
 
 data: data-metar data-openmeteo  ## All downloads (cached; reruns fetch only what's new)
+
+backtest:  ## Phase 2: TabPFN vs baselines on the 2025-26 season -> docs/results/backtest.json
+	$(PY) -m cloudsea.model
+
+train-table:  ## Freeze labelled rows into data/model/train_table.parquet (read by the nightly job)
+	$(PY) -c "from cloudsea.model import save_train_table; save_train_table()"
+
+nightly:  ## Make tonight's call (add ARGS=--dry-run to print instead of saving)
+	$(PY) -m cloudsea.jobs.nightly $(ARGS)
+
+grade:  ## Grade this morning's dawn (ARGS=--dry-run to print only)
+	$(PY) -m cloudsea.jobs.grader $(ARGS)
 
 label-report:  ## Phase 1: label definitions, base rates, examples, photo check -> docs/phase1/label_report.md
 	$(PY) -m cloudsea.analysis.label_report

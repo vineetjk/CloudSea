@@ -41,7 +41,7 @@ RUN_HOURS = 36
 
 
 def _client() -> httpx.Client:
-    return httpx.Client(headers={"User-Agent": UA}, timeout=120, follow_redirects=True)
+    return httpx.Client(headers={"User-Agent": UA}, timeout=30, follow_redirects=True)
 
 
 def _get(http: httpx.Client, url: str, params: dict, attempts: int = 4) -> dict:
@@ -95,7 +95,7 @@ def fetch_run(http: httpx.Client, run_day: date, run_hour: int = 0, point=PLAINS
         "forecast_hours": RUN_HOURS, "timezone": "UTC"})
 
 
-def fetch_runs(cache: Path, start: date = RUNS_START, end: date | None = None, workers: int = 4) -> None:
+def fetch_runs(cache: Path, start: date = RUNS_START, end: date | None = None, workers: int = 8) -> None:
     """Download and cache one 00 UTC run per day. Cached days are skipped, so reruns only fetch new days."""
     end = end or date.today()
     cache.mkdir(parents=True, exist_ok=True)
