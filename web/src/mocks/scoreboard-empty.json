@@ -1,0 +1,5 @@
+{
+  "summary": { "graded": 0, "correct": 0, "go_calls": 0, "go_hits": 0, "brier": null, "since": null },
+  "days": [],
+  "agreement": { "days_with_both": 0, "airport_and_photos_agree": 0 }
+}

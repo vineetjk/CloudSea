@@ -1,0 +1,26 @@
+{
+  "summary": { "graded": 2, "correct": 1, "go_calls": 0, "go_hits": 0, "brier": 0.1, "since": "2026-10-11" },
+  "days": [
+    {
+      "date": "2026-10-12",
+      "verdict": "MAYBE",
+      "probability": 0.43,
+      "airport_outcome": "no_sea",
+      "photo_outcome": "partial",
+      "photos": 2,
+      "correct": false,
+      "evidence": "VOBL 05:30-07:30: vis 4000 m in mist, SCT012, no fog"
+    },
+    {
+      "date": "2026-10-11",
+      "verdict": "SKIP",
+      "probability": 0.08,
+      "airport_outcome": "no_sea",
+      "photo_outcome": "clear_no_sea",
+      "photos": 3,
+      "correct": true,
+      "evidence": "VOBL 05:30-07:30: vis 6000 m, FEW020, no fog"
+    }
+  ],
+  "agreement": { "days_with_both": 2, "airport_and_photos_agree": 1 }
+}

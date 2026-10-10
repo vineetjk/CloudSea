@@ -1,0 +1,41 @@
+{
+  "status": "ok",
+  "call": {
+    "date": "2026-12-13",
+    "issued_at": "2026-12-12T20:30:08+05:30",
+    "verdict": "GO",
+    "probability": 0.71,
+    "sunrise": "06:31",
+    "first_light": "06:07",
+    "text": "GO for Sunday. 71% chance of a cloud sea at Nandi. Sunrise 06:31. Leave Electronics City by 04:01. Carry a warm jacket; it's 12°C at the top. A forecast, not a guarantee.",
+    "text_kn": null,
+    "text_hi": null,
+    "carry": [
+      "Warm jacket (summit about 12°C)",
+      "Water",
+      "Torch for the walk from parking",
+      "Something to sit on; the grass is wet at dawn"
+    ],
+    "conditions": { "summit_temp_c": 12, "wind_kmh": 6, "rain_last_24h": false },
+    "leave_by": [
+      { "area": "electronics-city", "label": "Electronics City", "drive_minutes": 100, "buffer_minutes": 20, "leave_by": "04:01" },
+      { "area": "hebbal", "label": "Hebbal", "drive_minutes": 55, "buffer_minutes": 20, "leave_by": "04:46" },
+      { "area": "indiranagar", "label": "Indiranagar", "drive_minutes": 80, "buffer_minutes": 20, "leave_by": "04:21" },
+      { "area": "jayanagar", "label": "Jayanagar", "drive_minutes": 90, "buffer_minutes": 20, "leave_by": "04:11" },
+      { "area": "koramangala", "label": "Koramangala", "drive_minutes": 85, "buffer_minutes": 20, "leave_by": "04:16" },
+      { "area": "whitefield", "label": "Whitefield", "drive_minutes": 95, "buffer_minutes": 20, "leave_by": "04:06" },
+      { "area": "yelahanka", "label": "Yelahanka", "drive_minutes": 45, "buffer_minutes": 20, "leave_by": "04:56" }
+    ],
+    "gate": { "opens": "06:00", "verified": false, "note": "Gate time not yet verified. Check before you go." },
+    "model": { "forecaster": "TabPFN v3.5 (Prior Labs)", "writer": "Gemma 4 E2B", "trained_through": "2025-09-30" },
+    "going_count": 37
+  },
+  "last_graded": {
+    "date": "2026-12-12",
+    "verdict": "GO",
+    "probability": 0.66,
+    "airport_outcome": "cloud_sea",
+    "photo_outcome": "cloud_sea",
+    "correct": true
+  }
+}
