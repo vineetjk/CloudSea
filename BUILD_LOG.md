@@ -237,3 +237,15 @@ The user asked me to run all phases without stopping, so I chose the label mysel
   - Screenshots of the live app and share cards.
   - `docs/DEMO.md` (60 s script) and `docs/POST_DRAFT.md`, with placeholders for every live result.
 - **Tests:** 67 passing with Postgres (label, leakage, writer guardrail, translation check, EXIF stripping, photo window, share cards, API integration, photo relabelling), plus 24 frontend tests.
+
+## 2026-10-10 15:10 — Screenshots, a stricter guardrail, DEV draft
+
+- `make screenshots` captures the live app in headless Chromium: home in light and dark, upload, scoreboard, the call card in each language, the backtest section, a three-screen strip, and the server's share cards. The screenshots caught two bugs on the live How page:
+  - Baselines showed "NaN%" for GO precision.
+  - The live model showed 77% because 26/34 = 0.7647 was stored as 0.765 and rounded again.
+  - Both fixed. The backtest re-ran from cached predictions at no TabPFN cost.
+- **Guardrail, second weakness.** Reading another Touch Grass entry ([golden-hour](https://dev.to/sansk_ya/golden-hour-a-go-outside-planner-where-a-small-local-gemma-cannot-invent-numbers-3ol5) by @sansk_ya) showed that "every number appears in the facts" also passes swapped values, and ours did. "Sunrise 03:40, leave by 06:07" would have been published.
+  - Times, the percentage and temperatures are now tied to their sentence and label.
+  - Three corruption tests cover swapped times, rain chance passed off as cloud-sea chance, and a temperature equal to another number.
+  - 6 of 6 real Gemma drafts still pass.
+- **Post:** staged as an unpublished DEV draft (article 4827603), following the challenge template, with images served from GitHub raw URLs. Every live result is a placeholder.
